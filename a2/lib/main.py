@@ -1,26 +1,23 @@
-from NearestNeighbors import *
-from Loaders import *
 from optparse import OptionParser
+from Loaders import *
+from DecisionTree import *
 	
 # Options
 parser = OptionParser()
-parser.add_option("-r", "--train", type="string", dest="train", default="cal.train", help="Training Data File")
-parser.add_option("-t", "--test", type="string", dest="test", default="cal.test", help="Test Data File")
-parser.add_option("-k", "--k", type="int", dest="k", default=1, help="Number of Neighbors")
-parser.add_option("-w", "--weighted", action="store_true", dest="weighted", default=False, help="Run Weighted Version?")
-parser.add_option("-n", "--normalize", action="store_true", dest="normalized", default=False, help="Normalize Data?")
+parser.add_option("-r", "--train", type="string", dest="train", default="bcan.train", help="Training Data File")
+parser.add_option("-t", "--test", type="string", dest="test", default="bcan.test", help="Test Data File")
+parser.add_option("-v", "--validate", type="string", dest="validate", default="bcan.validate", help="Validation Data File")
+parser.add_option("-s", "--stopping_parameter", type="int", dest="stop", default=1, help="Stopping Parameter")
 (options, args) = parser.parse_args()
 
-print "Loading '%s' as training set and '%s' as test set..." % (options.train,options.test)
-knn = load_training_data(options.train)
-test_data = load_test_data(options.test)
+print "Loading\n...'%s' as training set,\n...'%s' as test set,\n...'%s' as validation set,\n...stopping parameter %d..." % (options.train, options.test, options.validate, options.stop)
 
-if options.normalized:
-	print "Normalizing..."
-	knn.normalize()
-	test_data = knn.normalize_examples(test_data)
+training_set = load_data(options.train)
+test_set = load_data(options.test)
+validation_set = load_data(options.validate)
+s_para = options.stop
 
-# print knn.examples[0].features
-# print test_data[0].features
-print "Testing with k=%d, weighted=%s" % (options.k, options.weighted)
-print knn.rmse(test_data, k=options.k, is_weighted=options.weighted)
+dt = DecisionTree(training_set, stopping_parameter=s_para)
+print dt.prediction_error(test_set)
+print dt.training_error()
+print dt.count_nodes()

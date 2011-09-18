@@ -3,16 +3,17 @@ from collections import defaultdict
 from Loaders import *
 
 class Node:
-  def __init__(self, name, data, aa, stop, mfn):
+  def __init__(self, name, data, aa, ua, stop, mfn):
     self.data = data
     self.name = name
     self.entropy = self.__entropy(data)
     self.available_attrs = aa
+    self.used_attrs = ua
     self.stop = stop
     self.children = []
     self.majority_label = self.__majority_label()
     self.max_fn_name = mfn
-    if len(data) > self.stop:
+    if len(data) > self.stop and self.entropy > 0:
       if mfn == 'ce':
         self.__split(self.__negative_classification_error)
       elif mfn == 'ig':
@@ -22,6 +23,28 @@ class Node:
   # PUBLIC
   #
   
+  # Remove children from a node if all children predict the same class
+  def compress(self):
+    if len(self.children) > 0:
+      for c in self.children:
+        c.compress()
+      
+      have_leaves = False
+      for c in self.children:
+        if len(c.children) > 0:
+          have_leaves = True
+          break
+    
+      if not have_leaves:
+        curr = self.children[0].majority_label
+        all_same = True
+        for i in range(1,len(self.children)):
+          if curr != self.children[i].majority_label:
+            all_same = False
+            break
+        if all_same:
+          self.children = []
+    
   # Predict the label of the example
   def predict(self,example):
     if len(self.children) == 0:
@@ -33,10 +56,29 @@ class Node:
           raise Exception("Attribute access error")
         if eval('example.attrs[a] %s v' % op):
           return child.predict(example)
-    raise Exception("No Route Found!")
+    #raise Exception("No Route Found!")
+    return None # No examples for given attributes
   
   def predict_many(self,examples):
     return [self.predict(e) for e in examples]
+    
+  def count_nodes(self):
+    count = 0;
+    if len(self.children) > 0:
+      for child in self.children:
+        count += child.count_nodes()
+    return 1 + count
+  
+  def print_tree(self, level=0):
+    if self.name:
+      print "-" * level + " ".join([str(x) for x in self.name])
+    if len(self.children) == 0:
+      if self.majority_label:
+        print " " * (level+1) + self.majority_label
+      else:
+        print " " * (level+1) + "???"
+    for child in self.children:
+      child.print_tree(level=level+1)
   
   #
   # PRIVATE
@@ -47,7 +89,10 @@ class Node:
     bins = defaultdict(int)
     for d in self.data:
       bins[d.label] += 1
-    return max(bins.iteritems(), key=operator.itemgetter(1))[0]
+    if len(bins) > 0:
+      return max(bins.iteritems(), key=operator.itemgetter(1))[0]
+    else:
+      return None # Failed to predict because there aren't any examples
   
   # Split this node, on attribute and value that maximizes max_function
   def __split(self, max_function):
@@ -55,21 +100,21 @@ class Node:
     for a in self.available_attrs:
       vals = [e.attrs[a] for e in self.data]
       for v in vals:
-        left, right = [], []
-        for d in self.data:
-          if d.attrs[a] <= v:
-            left.append(d)
-          else:
-            right.append(d)
-        gain = max_function([left,right])
-        if gain > mg:
-          mg, mg_a, mg_v, mg_sets = gain, a, v, [left, right]
+        if (a,v) not in self.used_attrs:
+          left, right = [], []
+          for d in self.data:
+            if d.attrs[a] <= v:
+              left.append(d)
+            else:
+              right.append(d)
+          gain = max_function([left,right])
+          if gain > mg:
+            mg, mg_a, mg_v, mg_sets = gain, a, v, [left, right]
 
-    new_attr = list(self.available_attrs)
-    new_attr.remove(mg_a)
-    l = Node((mg_a,'<=',mg_v), mg_sets[0], new_attr, self.stop, self.max_fn_name)
-    r = Node((mg_a,'>',mg_v), mg_sets[1], new_attr, self.stop, self.max_fn_name)
-    self.children = [l, r]
+    if mg_a:
+      l = Node((mg_a,'<=',mg_v), mg_sets[0], self.available_attrs, self.used_attrs +[(mg_a,mg_v)], self.stop, self.max_fn_name)
+      r = Node((mg_a,'>',mg_v), mg_sets[1], self.available_attrs, self.used_attrs +[(mg_a,mg_v)], self.stop, self.max_fn_name)
+      self.children = [l, r]
   
   # Calculate the entropy of data
   def __entropy(self,data):
@@ -109,7 +154,9 @@ class Node:
 
 class DecisionTree:
   def __init__(self, training_data, stopping_parameter=1, splitting_criterion='ig'):
-    self.node = Node(None, training_data, training_data[0].attrs.keys(), stopping_parameter, splitting_criterion)
+    self.training_data = training_data
+    self.node = Node(None, training_data, training_data[0].attrs.keys(), [], stopping_parameter, splitting_criterion)
+    self.node.compress()
   
   # Predict the label of a single example based on the training data
   def predict(self, example):
@@ -119,7 +166,7 @@ class DecisionTree:
   def predict_many(self, examples):
     return self.node.predict_many(examples)
     
-  # Calculate the misclassification error for examples
+  # Calculate the test misclassification error
   def prediction_error(self, examples):
     predictions = self.predict_many(examples)
     actual = [e.label for e in examples]
@@ -130,27 +177,33 @@ class DecisionTree:
     pct_correct = float(correct) / len(predictions)
     return (correct, len(predictions), pct_correct)
     
+  # Calculate the training misclassification error
+  def training_error(self):
+    return self.prediction_error(self.training_data)
+    
   # Returns the # of nodes in the tree
   def count_nodes(self):
-    # TO BE IMPLEMENTED
-    return None
+    return self.node.count_nodes()
+    
+  def print_tree(self):
+    return self.node.print_tree()
     
   # Performs Reduced Error Post Pruning on the tree
   def post_prune(self):
     # TO BE IMPLEMENTED
     return None
 
-# Toy Example
-a1 = Example('A 1:1 2:2')
-a2 = Example('B 1:2 2:2')
-a3 = Example('C 1:1 2:1')
-a4 = Example('D 1:2 2:1')
-a5 = Example('D 1:2 2:3')
-dt = DecisionTree([a1, a2, a3, a4])
-# print dt.node.children[0].name
-# print dt.node.children[1].name
-# print dt.node.children[1].children[0].name
-# print dt.node.children[1].children[1].name
-# print dt.node.children[0].majority_label
-# print dt.node.children[1].majority_label
-print dt.prediction_error([a1, a2, a3, a4, a5])
+# # Toy Example
+# a1 = Example('A 1:1 2:2')
+# a2 = Example('B 1:2 2:2')
+# a3 = Example('C 1:1 2:1')
+# a4 = Example('D 1:2 2:1')
+# a5 = Example('D 1:2 2:3')
+# dt = DecisionTree([a1, a2, a3, a4], splitting_criterion='ce')
+# # print dt.node.children[0].name
+# # print dt.node.children[1].name
+# # print dt.node.children[1].children[0].name
+# # print dt.node.children[1].children[1].name
+# # print dt.node.children[0].majority_label
+# # print dt.node.children[1].majority_label
+# print dt.prediction_error([a1, a2, a3, a4, a5])
