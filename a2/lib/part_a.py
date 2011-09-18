@@ -17,9 +17,9 @@ for s_para in s_paras:
   dt = DecisionTree(training_set, stopping_parameter=s_para)
   #dt.print_tree()
   nodes = dt.count_nodes()
-  table[nodes] = (dt.prediction_error(validation_set), dt.prediction_error(test_set))
-  test_errors[nodes] = dt.prediction_error(test_set)[2]
-  train_errors[nodes] = dt.training_error()[2]
+  table[nodes] = (s_para,dt.prediction_error(validation_set)[1])
+  test_errors[nodes] = dt.prediction_error(test_set)[1]
+  train_errors[nodes] = dt.training_error()[1]
   pg.update(prog/s_len, 'Info Gain')
   prog += 1
   
@@ -33,10 +33,10 @@ for s_para in s_paras:
   dt = DecisionTree(training_set, stopping_parameter=s_para, splitting_criterion='ce')
   #dt.print_tree()
   nodes = dt.count_nodes()
-  table[nodes] = (dt.prediction_error(validation_set), dt.prediction_error(test_set))
-  test_errors[nodes] = dt.prediction_error(test_set)[2]
-  train_errors[nodes] = dt.training_error()[2]
-  pg.update(prog/s_len, 'Classification Error')
+  table[nodes] = (s_para,dt.prediction_error(validation_set)[1])
+  test_errors[nodes] = dt.prediction_error(test_set)[1]
+  train_errors[nodes] = dt.training_error()[1]
+  pg.update(prog/s_len, 'Info Gain')
   prog += 1
 
 plot_multiline('part_b', [train_errors,test_errors], labels=['Training','Testing'])

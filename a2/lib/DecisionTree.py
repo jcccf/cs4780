@@ -175,7 +175,7 @@ class DecisionTree:
       if x == y:
         correct += 1
     pct_correct = float(correct) / len(predictions)
-    return (correct, len(predictions), pct_correct)
+    return (correct, len(predictions) - correct, len(predictions), pct_correct)
     
   # Calculate the training misclassification error
   def training_error(self):
