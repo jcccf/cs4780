@@ -44,7 +44,7 @@ class Node:
             break
         if all_same:
           self.children = []
-    
+
   # Predict the label of the example
   def predict(self,example):
     if len(self.children) == 0:
@@ -79,7 +79,29 @@ class Node:
         print " " * (level+1) + "???"
     for child in self.children:
       child.print_tree(level=level+1)
-  
+
+  # returns node with least validation error
+  def find_node(self,dt,val_examples,error,node):
+    if len(self.children) ==0:
+      return [node, error]
+    my_error = ('inf')
+    list = []
+    for child in self.children:
+      [my_node, my_error] = child.find_node(dt,val_examples,error,node)
+      if my_error < error:
+		    node = my_node
+		    error = my_error
+      while len(child.children):
+        list.append(child.children.pop())
+      my_error = dt.predict_error(val_examples)
+      if error > my_error and len(list):
+      # so I don't keep popping leaf nodes
+		    node = child
+		    error = my_error
+      while len(list):
+        child.children.append(list.pop())
+    return [node, error]
+
   #
   # PRIVATE
   #
@@ -175,9 +197,19 @@ class DecisionTree:
       if x == y:
         correct += 1
     pct_correct = float(correct) / len(predictions)
-    pct_wrong = 1.0 - pct_correct
-    return (correct, len(predictions) - correct, len(predictions), pct_correct, pct_wrong)
+    return (correct, len(predictions) - correct, len(predictions), pct_correct)
     
+  # Calculate the test misclassification error
+  def predict_error(self, examples):
+    predictions = self.predict_many(examples)
+    actual = [e.label for e in examples]
+    correct = 0
+    for x, y in map(None, predictions, actual):
+      if x == y:
+        correct += 1
+    pct_correct = float(correct) / len(predictions)
+    return 1.0 - pct_correct
+
   # Calculate the training misclassification error
   def training_error(self):
     return self.prediction_error(self.training_data)
@@ -188,11 +220,23 @@ class DecisionTree:
     
   def print_tree(self):
     return self.node.print_tree()
+
+  def find_node(self,validation_data,error):
+    return self.node.find_node(self,validation_data,error,self.node)
+
+  def prune_node(self,target):
+    return self.node.prune_node(target)
     
   # Performs Reduced Error Post Pruning on the tree
-  def post_prune(self):
-    # TO BE IMPLEMENTED
-    return None
+  def post_prune(self,validation_data):
+    error = self.predict_error(validation_data)
+    [my_node, my_error] = self.find_node(validation_data,'inf')
+    while my_error <= error:
+      for v in my_node.children:
+        my_node.children.remove(v)
+      [my_node, my_error]= self.find_node(validation_data,'inf')
+      print my_error
+    return self
 
 # # Toy Example
 # a1 = Example('A 1:1 2:2')
