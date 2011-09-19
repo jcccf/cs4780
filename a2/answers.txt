@@ -1,0 +1,76 @@
+Question 1.
+-----------
+a.
+Will pick rating.
+
+b.
+No it's not. In this decision tree, predicting on rating will cause a movie with a rating of 5 to get predicted as being liked, when the main reason this was the case was because Natalie Portman was in the movie. An example is (5,false,false), which would be predicted as True.
+
+c.
+Let I be the set of classes
+
+Let n(i), i \in I, be the # of examples in a class i.
+
+The training error here is simply the total # of elements subtracting the # of elements in the set with the most elements (since that is the class to predict)
+
+Err = \sum_{i \in I} n(i) - \max_{i \in I} n(i)
+
+Now, consider a split on some attribute into some positive number of nodes. Let J be the set of these nodes.
+
+Let n_j(i), i \in I, j \in J be the # of examples of class i in the node j
+
+Now, \sum_{j \in J} n_j(i) = n(i)
+
+The training error for each node j \in J is
+
+\sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i)
+
+So the total training error for all nodes in J is
+
+Err_T = \sum_{j \in J} ( \sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i) )
+= \sum_{j \in J} \sum_{i \in I} n_j(i) - \sum_{j \in J} \max_{i \in I} n_j(i)
+= \sum_{i \in I} n(i) - \sum_{j \in J} \max_{i \in I} n_j(i)
+
+Our wish is that Err_T <= Err
+Or equivalently, \sum_{j \in J} \max_{i \in I} n_j(i) >= \max_{i \in I} n(i)
+
+To prove this,
+\max_{i \in I} n_j(i) >= n_j(i) \forall i \in I, j \in J
+=>
+\sum_{j \in J} \max_{i \in I} n_j(i) >= \sum_{j \in J} n_j(i) \forall i \in I
+=>
+\sum_{j \in J} \max_{i \in I} n_j(i) >= \max_{i \in I} \sum_{j \in J} n_j(i)
+
+QED
+
+Question 3.
+-----------
+a.
+
+For kNN,
+  Err_s(h) = 76 / 400
+  95% confidence interval is thus 0.19 +/- 1.96 * \sqrt{0.19 * 0.81 / 400} = [0.152,0.228]
+
+For DTree,
+  Err_s(h) = 60 / 400
+  95% confidence interval is thus 0.15 +/- 1.96 * \sqrt{0.15 * 0.85 / 400} = [0.115,0.185]
+
+Let 1 be the kNN classifier, 2 be the Decision Tree classifier
+
+d_1 = 36
+d_2 = 20
+k = d_1 + d2 = 56
+
+If Err_p(h1) = Err_p(h2), then d1 and d2 are binomially distributed with p = 1/2
+Let the null hypothesis be D1 is binomial with p = 1/2 and k = d_1+d_2
+
+P(D_1 >= 36 | p=0.5, k=56) = 0.011 < 0.025
+Reject the null hypothesis
+
+b.
+
+c.
+
+d.
+Prefer the decision tree, because it already gets higher accuracy on this test.
+Also, we observe that with an additional node, say a2==5, can obtain 100% accuracy on this game. In this game too, "distance" is not a good indicator of whether the results one gets will be similar.
