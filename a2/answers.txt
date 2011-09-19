@@ -86,7 +86,9 @@ The training error for this is 0.0218, and the test error for this is 0.0738.
 
 I would prefer a stopping parameter chosen by cross-validation.
 
-The pro of cross-validation is that cross-validation is nearly unbiased, and allows you to evaluate a model to avoid over fitting, while still using the majority of the data for training (90% in 10-fold cross-validation).
+The pro of cross-validation is that cross-validation is nearly unbiased, and allows you to evaluate a model to avoid over fitting, while still using the majority of the data for training (90% in 10-fold cross-validation). 
+
+Also, rather than just using a single validation set, which may not be representative of the population, for each "fold", you use some different part of the training set as the validation set, and averaging will give you a better estimate of how accurate the hypothesis made was.
 
 The cons of cross-validation is that you don't get to use the full set of examples for training. This is most evident in 2-fold cross-validation. And also with k-fold cross-validation with high k, there is then high overlap of training examples between each of the k validations, and these are highly dependent on each other.
 
