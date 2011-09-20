@@ -85,21 +85,20 @@ class Node:
     if len(self.children) ==0:
       return [node, error]
     my_error = ('inf')
-    list = []
+    temp_list = None
     for child in self.children:
       [my_node, my_error] = child.find_node(dt,val_examples,error,node)
       if my_error < error:
-		    node = my_node
-		    error = my_error
-      while len(child.children):
-        list.append(child.children.pop())
+        node = my_node
+        error = my_error
+      temp_list = child.children
+      child.children = []
       my_error = dt.predict_error(val_examples)
-      if error > my_error and len(list):
       # so I don't keep popping leaf nodes
-		    node = child
-		    error = my_error
-      while len(list):
-        child.children.append(list.pop())
+      if error > my_error and len(temp_list):
+        node = child
+        error = my_error
+      child.children = temp_list
     return [node, error]
 
   #
@@ -197,7 +196,8 @@ class DecisionTree:
       if x == y:
         correct += 1
     pct_correct = float(correct) / len(predictions)
-    return (correct, len(predictions) - correct, len(predictions), pct_correct)
+    pct_wrong = 1.0 - pct_correct
+    return (correct, len(predictions) - correct, len(predictions), pct_correct, pct_wrong)
     
   # Calculate the test misclassification error
   def predict_error(self, examples):

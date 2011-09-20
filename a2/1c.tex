@@ -1,0 +1,56 @@
+\documentclass[]{article}
+
+\usepackage{parskip}
+\usepackage{amssymb}
+\usepackage{mathtools}
+
+\begin{document}
+
+\title{CS 4780 Q1c}
+\author{jc882, sy483}
+\date{\today}
+\maketitle
+
+Let $I$ be the set of classes
+
+Let $n(i)$, $i \in I$, be the \# of examples in a class i.
+
+The training error here is simply the total \# of elements subtracting the \# of elements in the set with the most elements (since that is the class to predict)
+
+\begin{align*}
+Err = \sum_{i \in I} n(i) - \max_{i \in I} n(i)
+\end{align*}
+
+Now, consider a split on some attribute into some positive number of nodes. Let J be the set of these nodes.
+
+Let $n_j(i)$, $i \in I$, $j \in J$ be the \# of examples of class $i$ in the node $j$
+
+Now, $\sum_{j \in J} n_j(i) = n(i)$
+
+The training error for each node $j \in J$ is
+
+$\sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i)$
+
+So the total training error for all nodes in J is
+
+\begin{align*}
+Err_T &= \sum_{j \in J} ( \sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i) ) \\
+&= \sum_{j \in J} \sum_{i \in I} n_j(i) - \sum_{j \in J} \max_{i \in I} n_j(i) \\
+&= \sum_{i \in I} n(i) - \sum_{j \in J} \max_{i \in I} n_j(i)
+\end{align*}
+
+Our wish is that $Err_T \le Err$
+
+Or equivalently, $\sum_{j \in J} \max_{i \in I} n_j(i) \ge \max_{i \in I} n(i)$ by subtracting $\sum_{i \in I} n(i)$ from both sides of the previous equation
+
+To prove this, note that
+\begin{align*}
+\max_{i \in I} n_j(i) &\ge n_j(i) \forall i \in I, j \in J \\
+\Rightarrow \sum_{j \in J} \max_{i \in I} n_j(i) &\ge \sum_{j \in J} n_j(i) \forall i \in I \\
+\Rightarrow \sum_{j \in J} \max_{i \in I} n_j(i) &\ge \max_{i \in I} \sum_{j \in J} n_j(i)
+\end{align*}
+Q.E.D
+
+Thus we've shown that the absolute error of all child nodes is at most equal to the error of the parent node. And dividing by $n = \sum_{i \in I} n(i)$ on both sides will show that the misclassification error of all child nodes is also at most equal to the misclassification error of the parent node.
+
+\end{document}

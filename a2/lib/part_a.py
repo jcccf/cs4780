@@ -3,7 +3,7 @@ from DecisionTree import *
 from Plotter import *
 from ProgressBar import *
 
-training_set = load_data('bcan.train30')
+training_set = load_data('bcan.train90') # modify to bcan.train30 as needed
 test_set = load_data('bcan.test')
 validation_set = load_data('bcan.validate')
 s_paras = [1, 5, 9, 17, 25, 37, 43, 49]
@@ -23,7 +23,7 @@ for s_para in s_paras:
   pg.update(prog/s_len, 'Info Gain')
   prog += 1
   
-plot_multiline('part_a_30', [train_errors,test_errors], labels=['Training','Testing'], xlabel='Number of Nodes', ylabel='Error Rate')
+plot_multiline('part_a', [train_errors,test_errors], labels=['Training','Testing'], xlabel='Number of Nodes', ylabel='Error Rate')
 
 for k,s,v in table:
   print "%d\t%.3f\t%d" % (k,v,s)
@@ -41,7 +41,7 @@ for s_para in s_paras:
   pg.update(prog/s_len, 'Classification Error')
   prog += 1
 
-plot_multiline('part_b_30', [train_errors,test_errors], labels=['Training','Testing'], xlabel='Number of Nodes', ylabel='Error Rate')
+plot_multiline('part_b', [train_errors,test_errors], labels=['Training','Testing'], xlabel='Number of Nodes', ylabel='Error Rate')
 
 for k,s,v in table:
   print "%d\t%.3f\t%d" % (k,v,s)
