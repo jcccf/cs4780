@@ -122,7 +122,7 @@ If Err_p(h1) = Err_p(h2), then d1 and d2 are binomially distributed with p = 1/2
 Let the null hypothesis be D1 is binomial with p = 1/2 and k = d_1+d_2
 
 P(D_1 >= 36 | p=0.5, k=56) = 0.011 < 0.025
-Reject the null hypothesis: 
+Reject the null hypothesis => the 2 error rates are significantly different.
 
 b. see graph
 
