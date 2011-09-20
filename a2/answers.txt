@@ -1,10 +1,19 @@
+CS 4780 Homework 2
+
+Justin Cheng (jc882)
+Sunling Selena Yang (sy483)
+
 Question 1.
 -----------
-a.
-Will pick rating.
+a. Entropy:
+Long: (3/8)*(0) + (5/8)*(-(3/5)*log2(3/5) - (2/5)*log2(2/5))  = 0.607
+NP: (1/2)*(-(3/4)*log2(3/4) - (1/4)*log2(1/4))*2 = 0.811
+Rating: (1/8)*0 + (2/8)*(-(1)*log(1)) + ... = 0
+
+Split on Rating because it has the smallest entropy and hence will produce the largest information gain.
 
 b.
-No it's not. In this decision tree, predicting on rating will cause a movie with a rating of 5 to get predicted as being liked, when the main reason this was the case was because Natalie Portman was in the movie. An example is (5,false,false), which would be predicted as True.
+No it's not. For example, if I have n samples and n possible values for some attribute, the decision tree would split on that attribute and I would have a very broad tree with depth 1, where everything is predicted exactly but be a poor predictor of future events.
 
 c.
 Let I be the set of classes
@@ -63,7 +72,7 @@ The training error decreases as the # of nodes in the tree increases - this is a
 
 However, the test set misclassification error is relatively constant. Information gain is less susceptible to over-fitting.
 
-A good and fair choice for stopping parameter would be 17. This minimizes the test error, as well as the validation error, while keeping the training error to a reasonable level. The reason we did not choose a stopping parameter of 43 or 49 was because the test error for these was significantly higher for trees built with these parameters.
+A good and fair choice for stopping parameter would be 49 because it creates the smallest tree while maintaining the lowest validation error among all the stopping parameters.
 
 b.
 N	V	S
@@ -76,9 +85,12 @@ N	V	S
 23	0.018	43
 23	0.018	49
 
-The value of the stopping parameter that minimizes the validation error is any parameter from 5 to 49.
+The value of the stopping parameter that minimizes the validation error is any parameter from 5 to 49. Using Occam's Razor reasoning, choose the one with the smallest number of nodes, so stopping parameter = 49.
 
 The test set misclassification error for T_ME is lower than T_IG. However, notice that as the stopping parameter increases, the number of errors the tree built using misclassification error decreases. In other words, misclassification error is a lot more prone to over fitting.
+
+c. number of nodes: 3
+   Testing Set Classification Error: 0.0738
 
 d.
 The stopping parameter chosen was 17, with an average of 3.2 (absolute) errors made.
@@ -86,7 +98,7 @@ The training error for this is 0.0218, and the test error for this is 0.0738.
 
 I would prefer a stopping parameter chosen by cross-validation.
 
-The pro of cross-validation is that cross-validation is nearly unbiased, and allows you to evaluate a model to avoid over fitting, while still using the majority of the data for training (90% in 10-fold cross-validation). 
+The pro of cross-validation is that cross-validation is nearly unbiased, and allows you to evaluate a model to avoid over fitting, while still using the majority of the data for training (90% in 10-fold cross-validation).
 
 Also, rather than just using a single validation set, which may not be representative of the population, for each "fold", you use some different part of the training set as the validation set, and averaging will give you a better estimate of how accurate the hypothesis made was.
 
@@ -111,18 +123,17 @@ Let 1 be the kNN classifier, 2 be the Decision Tree classifier
 
 d_1 = 36
 d_2 = 20
-k = d_1 + d2 = 56
+k = d_1 + d_2 = 56
 
 If Err_p(h1) = Err_p(h2), then d1 and d2 are binomially distributed with p = 1/2
 Let the null hypothesis be D1 is binomial with p = 1/2 and k = d_1+d_2
 
 P(D_1 >= 36 | p=0.5, k=56) = 0.011 < 0.025
-Reject the null hypothesis
+Reject the null hypothesis => the 2 error rates are significantly different.
 
-b.
+b. see graph
 
-c.
+c. see graph
 
 d.
-Prefer the decision tree, because it already gets higher accuracy on this test.
-Also, we observe that with an additional node, say a2==5, can obtain 100% accuracy on this game. In this game too, "distance" is not a good indicator of whether the results one gets will be similar.
+Prefer the decision tree because the disjunctive structure in DT allows disconnected regions which is similar to the behavior of the dice dataset.
