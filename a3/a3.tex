@@ -94,4 +94,51 @@ Do not reject null hypothesis. The Linear SVM has a prediction error that isn't 
 
 (TODO: So...?)
 
+\section{Linear Separability}
+\subsection{a.}
+Consider the construction where each sample with an unknown feature is assigned $k$ for exactly one of $t_{i1},...,t_{im}$, by the problem definition. Thus, for each of these $m$ samples, exactly one of these $t$ variables is set to $k$. We can then classify each of these samples using only the value of that indicator feature.
+
+\subsubsection{Example}
+Consider $x_1 = (1,?)$, $x_2 = (1,2)$, $x_3 = (1,1)$, with $y_1 = -1, y_2 = -1, y_3 = +1$. These examples are obviously not separable in $\mathbb{R}^2$ if we set the unknown feature to 0. In this example, $m=1$, so we add 1 indicator variable, setting it to $k=1$ for $x_1$ and $0$ for all other samples, so that $x_1 = (1,0,1)$, $x_2 = (1,2,0)$, $x_3 = (1,1,0)$.
+
+After running Perceptron, we get $w = (0,1,-1)$, which separates all the examples correctly.
+
+In fact, for any $m$, and for any $k$, you can set $w_{t_{ii}}$, for $0 \le i \le m$ to have an absolute value greater than the sum of all other non-$t_{ij}$ terms, and set its sign accordingly based on $y_i$, to ensure that sample $i$ is classified correctly. You do not need to care about the other $t_{ij}$, since these are 0 everywhere else and will not affect the computation other than for that specific sample.
+
+\subsection{b.}
+The radius of $\tilde S$ is simply $\max \{R,k\}$, and since $\delta$ is arbitrarily defined, it remains the same. Using the same derivation as in lecture, replace $x_i^2 \le R^2$ with $x_i^2 \le (\max \{R, k\})^2$.
+
+The upper bound on the number of mistakes made is thus $\frac{(\max \{R,k\})^2}{\delta^2}$.
+
+\section{Linear SVM}
+
+\subsection{a.}
+???
+
+\subsection{b.}
+For the hard margin unbiased SVM, the dual QP is
+
+\begin{align*}
+\max\quad & D(\alpha) = \sum_{i=1}^n \alpha_i - \frac{1}{2} \sum_{i=1}^n \sum_{j=1}^n y_iy_j\alpha_i\alpha_j(x_i \cdot x_j)\\
+\text{s.t.}\quad & 0 \le \alpha_i
+\end{align*}
+
+Since $x_i^Tx_j = 0$ for $i \neq j$, the objective function simplifies to $\max \sum_i \alpha_i - \frac{1}{2}\sum_{i=1}^n \alpha_i^2 l_i$, since $y_iy_i = 1~\forall i$.
+
+Further simplifying, we get $\max \sum_i \left( \alpha_i (1-\frac{1}{2}\alpha_i l_i)\right)$, but this is simply a sum of quadratic terms each in $\alpha_i$, and to maximize this, we can set $\alpha_i = \frac{1}{l_i}$.
+
+This is also the dual variable $\alpha_i$ for each training example $(x_i, y_i$)
+
+\subsection{c.}
+First, note that in the perceptron primal algorithm, for each update, you add $y_i x_i$ to $w_k$. If all $x_i$ are scaled up, such that $x_i^\star = kx_i$, in each update, you will instead add $ky_ix_i$ to $w_k$. Thus, after normalizing, $w$ will still be the same as before, since we simply multiplied $w$ (unnormalized) by $k$.
+
+Now, the error $\xi_i$ will be multiplied by $k$ for each $i$. To see why this is the case, notice that this value depends on the distance to the hyperplane, $w^Tx_i$. In the new case, this value is now $w^Tx_i^\star = kw^Tx_i$, so that this distance is multiplied by $k$.
+
+Thus, in our objective, we want to set $C$ such that our new objective $\min \frac{1}{2}||w^{\star 2}|| + C^\star \sum_{i=1}^n \xi_i^\star$ is a constant factor of our original objective function.
+But we found out the new values of $w$ and $xi$, so we know our new objective is equivalently $\min \frac{1}{2}||w^2|| + C^\star \sum_{i=1}^n k\xi_i$. Comparing terms, $kC^\star = C \Rightarrow C^\star = \frac{C}{k}$.
+
+Thus, $C$ should be divided by $k$ so that the new solution defines the same linear classifier.
+
+The resulting $(w^\star, \xi^\star)$ is equivalently $(w, k\xi)$. 
+
 \end{document}
