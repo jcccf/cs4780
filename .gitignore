@@ -2,3 +2,6 @@
 *.pyc
 */data/*
 a1/*
+*TSWLatexian*
+*.zip
+*~*.xlsx
