@@ -15,7 +15,7 @@ def plot_semilog(name, dict, xlabel='', ylabel='', title='', linetype='k'):
 	plt.savefig('../data/images/%s.eps' % name)
 	
 # Plot y against log x (semi-log plot)
-def plot_multiline(name, dict_array, xlabel='', ylabel='', title='', linetypes=['b','r','g','k'], labels=[], xlog=None):
+def plot_multiline(name, dict_array, xlabel='', ylabel='', title='', linetypes=['b','r','g','k'], labels=[], xlog=None, ylim=None):
   plt.clf()
   if len(xlabel) > 0:
   	plt.xlabel(xlabel)
@@ -25,6 +25,8 @@ def plot_multiline(name, dict_array, xlabel='', ylabel='', title='', linetypes=[
   	plt.title(title)
   if xlog:
     plt.xscale('log', basex=xlog)
+  if ylim:
+    plt.ylim(ylim)
   for dicty, linetype, label in zip(dict_array, linetypes, labels): 
     dicty = zip(*sorted(dicty.iteritems()))
     plt.plot(dicty[0], dicty[1], linetype, label=label)

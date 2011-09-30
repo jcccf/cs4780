@@ -69,8 +69,29 @@ The smallest validation error rate is achieved at $C = 8$. (TODO compare to (a))
 The training error rate goes to 0 as C increases, but the validation error steadily decreases to a minimum at $C=8$, and increases after that. (TODO Why?)
 
 \subsection{c.}
-(TODO Perceptron)
+\includegraphics[scale=0.42]{data/images/part_c_tra.eps}
+\includegraphics[scale=0.42]{data/images/part_c_val.eps}
+The graph on the left shows the training error, and the graph on the right shows the validation error. Perceptron works badly on reorder-3 because in that reordering, all the positive examples come before the negative examples. Thus, the algorithm makes very few updates in each iteration (at most 4), since after the first mistake on the first positive example, all examples are classified correctly until the first negative example, and then after a couple of corrections, all subsequent examples (all negative) are all classified correctly. Thus, the hypothesis learned is not indicative of a true weighing of all the features.
 
 Using $SVM_{light}$ with $C=8$, the training error in all cases is 0.009, and the validation error in all cases is 0.205. 
+
+\subsection{d.}
+Let $H_1$ be the hypothesis produced by the perceptron algorithm. Let $H_2$ be the hypothesis produced by SVM. Let $d_i$ be the \# of examples $H_i$ makes an error on, but not $H_{i'}$, $i' \neq i$.
+
+$d_1 = 49$
+
+$d_2 = 37$
+
+$k = d_1 + d_2 = 86$
+
+If $Err_p(h_1) = Err_p(h_2)$, then $d_1$, $d_2$ are binomially distributed with $p = \frac{1}{2}$.
+
+Null hypothesis: $D_1$ is binomial with $p=\frac{1}{2}$ and $k=86$.
+
+$P(D_1 \ge d_1~|~p = 0.5, k) = 0.080 > 0.025$
+
+Do not reject null hypothesis. The Linear SVM has a prediction error that isn't significantly different.
+
+(TODO: So...?)
 
 \end{document}
