@@ -7,6 +7,7 @@ from ProgressBar import *
 
 class Perceptron:
   def __init__(self, data, num_features=30000):
+    raise Exception("Need to Fix R Here!!!")
     # Load Examples in
     self.num_features = num_features
     self.x, self.y = self.matricize(data)

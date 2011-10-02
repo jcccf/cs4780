@@ -13,10 +13,10 @@ class FastPerceptron:
     
     # Initialize R
     alist = []
-    for i in range(0, num_features):
-      alist.append(max([abs(row[i]) for row in self.x]))
-    self.r = max(alist)
-    self.r2 = self.r ** 2
+    for i in range(0, len(self.x)):
+      alist.append(sum([x ** 2 for x in self.x[i]]))
+    self.r2 = max(alist)
+    self.r = math.sqrt(self.r2)
     print self.r
     
     # Initialize w, b, k
