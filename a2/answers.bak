@@ -1,0 +1,132 @@
+Question 1.
+-----------
+a. Entropy:
+Long: (3/8)*(0) + (5/8)*(-(3/5)*log2(3/5) - (2/5)*log2(2/5))  = 0.607
+NP: (1/2)*(-(3/4)*log2(3/4) - (1/4)*log2(1/4))*2 = 0.811
+Rating: (1/8)*0 + (2/8)*(-(1)*log(1)) + ... = 0
+
+Split on Rating because it has the smallest entropy and hence will produce the largest information gain.
+
+b.
+No it's not. For example, if I have n samples and n possible values for some attribute, the decision tree would split on that attribute and I would have a very broad tree with depth 1, where everything is predicted exactly but be a poor predictor of future events.
+
+c.
+Let I be the set of classes
+
+Let n(i), i \in I, be the # of examples in a class i.
+
+The training error here is simply the total # of elements subtracting the # of elements in the set with the most elements (since that is the class to predict)
+
+Err = \sum_{i \in I} n(i) - \max_{i \in I} n(i)
+
+Now, consider a split on some attribute into some positive number of nodes. Let J be the set of these nodes.
+
+Let n_j(i), i \in I, j \in J be the # of examples of class i in the node j
+
+Now, \sum_{j \in J} n_j(i) = n(i)
+
+The training error for each node j \in J is
+
+\sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i)
+
+So the total training error for all nodes in J is
+
+Err_T = \sum_{j \in J} ( \sum_{i \in I} n_j(i) - \max_{i \in I} n_j(i) )
+= \sum_{j \in J} \sum_{i \in I} n_j(i) - \sum_{j \in J} \max_{i \in I} n_j(i)
+= \sum_{i \in I} n(i) - \sum_{j \in J} \max_{i \in I} n_j(i)
+
+Our wish is that Err_T <= Err
+Or equivalently, \sum_{j \in J} \max_{i \in I} n_j(i) >= \max_{i \in I} n(i)
+
+To prove this,
+\max_{i \in I} n_j(i) >= n_j(i) \forall i \in I, j \in J
+=>
+\sum_{j \in J} \max_{i \in I} n_j(i) >= \sum_{j \in J} n_j(i) \forall i \in I
+=>
+\sum_{j \in J} \max_{i \in I} n_j(i) >= \max_{i \in I} \sum_{j \in J} n_j(i)
+
+QED
+
+Question 2.
+-----------
+a.
+N - # of nodes in the tree produced
+V - Validation Set Misclassification Error
+S - Splitting Parameter
+N	V	S
+51	0.055	1
+39	0.055	5
+33	0.055	9
+15	0.018	17
+9	0.055	25
+9	0.055	37
+7	0.018	43
+7	0.018	49
+
+The training error decreases as the # of nodes in the tree increases - this is a result of being able to fit the training data better to a tree since we have more attribute-value pairs on which to split on. Also, since more nodes implies lower entropy - each leaf of a tree with greater nodes is at least as pure or purer for a tree with less nodes, the testing misclassification error decreases.
+
+However, the test set misclassification error is relatively constant. Information gain is less susceptible to over-fitting.
+
+A good and fair choice for stopping parameter would be 49 because it creates the smallest tree while maintaining the lowest validation error among all the stopping parameters.
+
+b.
+N	V	S
+73	0.036	1
+55	0.018	5
+51	0.018	9
+37	0.018	17
+37	0.018	25
+25	0.018	37
+23	0.018	43
+23	0.018	49
+
+The value of the stopping parameter that minimizes the validation error is any parameter from 5 to 49. Using Occam's Razor reasoning, choose the one with the smallest number of nodes, so stopping parameter = 49.
+
+The test set misclassification error for T_ME is lower than T_IG. However, notice that as the stopping parameter increases, the number of errors the tree built using misclassification error decreases. In other words, misclassification error is a lot more prone to over fitting.
+
+c. number of nodes: 3
+   Testing Set Classification Error: 0.0738
+
+d.
+The stopping parameter chosen was 17, with an average of 3.2 (absolute) errors made.
+The training error for this is 0.0218, and the test error for this is 0.0738.
+
+I would prefer a stopping parameter chosen by cross-validation.
+
+The pro of cross-validation is that cross-validation is nearly unbiased, and allows you to evaluate a model to avoid over fitting, while still using the majority of the data for training (90% in 10-fold cross-validation).
+
+The cons of cross-validation is that you don't get to use the full set of examples for training. This is most evident in 2-fold cross-validation. And also with k-fold cross-validation with high k, there is then high overlap of training examples between each of the k validations, and these are highly dependent on each other.
+
+e.
+There are only 7 or 9 nodes in the tree now, and the error rate for 9 nodes is zero. Sometimes it can be the case that working with less sample data helps you obtain a better, simpler hypothesis.
+
+Question 3.
+-----------
+a.
+
+For kNN,
+  Err_s(h) = 76 / 400
+  95% confidence interval is thus 0.19 +/- 1.96 * \sqrt{0.19 * 0.81 / 400} = [0.152,0.228]
+
+For DTree,
+  Err_s(h) = 60 / 400
+  95% confidence interval is thus 0.15 +/- 1.96 * \sqrt{0.15 * 0.85 / 400} = [0.115,0.185]
+
+Let 1 be the kNN classifier, 2 be the Decision Tree classifier
+
+d_1 = 36
+d_2 = 20
+k = d_1 + d_2 = 56
+
+If Err_p(h1) = Err_p(h2), then d1 and d2 are binomially distributed with p = 1/2
+Let the null hypothesis be D1 is binomial with p = 1/2 and k = d_1+d_2
+
+P(D_1 >= 36 | p=0.5, k=56) = 0.011 < 0.025
+Reject the null hypothesis: 
+
+b. see graph
+
+c. see graph
+
+d.
+Prefer the decision tree because the disjunctive structure in DT allows disconnected regions which is similar to the behavior of the dice dataset.
