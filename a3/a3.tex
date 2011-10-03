@@ -34,7 +34,7 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt} % remove line at top
 \lhead{\fancyplain{}{CS 4780 A3}}
-\rhead{\fancyplain{}{Justin Cheng \emph{jc882}, Sunling Selena Yang}}
+\rhead{\fancyplain{}{Justin Cheng \emph{jc882}, Sunling Selena Yang \emph{sy483}}}
 \rfoot{\fancyplain{}{\thepage}}
 
 \begin{document}
@@ -53,11 +53,11 @@
 
 The training error decreases dramatically after the first few iterations, although it is not strictly decreasing. However, after the 15th iteration the training error is 0, meaning that a separating hyperplane was learnt.
 
-The validation error fluctuates wildly for the first few iterations, but then stabilizes at about 0.217.
+The validation error fluctuates wildly for the first few iterations, but then stabilizes at about 0.227.
 
 This does appear to confirm the fact that the Perceptron algorithm converges after a finite number of iterations, and slightly overfits when iterated too many times.
 
-Prefer a lower learning rate for improved accuracy, though over a longer number of iterations, since increasing the learning rate speeds up convergence around the true separating hyperplane.. If the learning rate is too high, over-correction is likely to occur and you might end up oscillating around the true separating hyperplane.
+The perceptron should prefer a lower learning rate for improved accuracy, though over a longer number of iterations, since increasing the learning rate speeds up convergence around the true separating hyperplane.. If the learning rate is too high, over-correction is likely to occur and you might end up oscillating around the true separating hyperplane.
 
 Prefer to use the primal algorithm, since computation in each iteration requires using the whole matrix of training examples and storing the alpha values for each example, rather than a single $1\times n$ dimensional matrix if $n$ is the number of unique features. Either algorithm should be equally correct. However, the dual algorithm does provide us with additional expressive power since we can see how important certain examples are by examining their corresponding $\alpha$ values.
 
@@ -73,7 +73,7 @@ The training error rate goes to 0 as C increases, but the validation error stead
 \subsection{c.}
 \includegraphics[scale=0.42]{data/images/part_c_tra.eps}
 \includegraphics[scale=0.42]{data/images/part_c_val.eps}
-The graph on the left shows the training error, and the graph on the right shows the validation error. Perceptron works badly on reorder-3 because in that reordering, all the positive examples come before the negative examples. Thus, the algorithm makes very few updates in each iteration (at most 4), since after the first mistake on the first positive example, all examples are classified correctly until the first negative example, and then after a couple of corrections, all subsequent examples (all negative) are all classified correctly. Thus, the hypothesis learned is not indicative of a true weighing of all the features.
+The graph on the left shows the training error, and the graph on the right shows the validation error. Perceptron works badly on reorder-3 because in that reordering, all the positive examples come before the negative examples. Thus, the algorithm makes very few updates in each iteration (at most 4), since after the first mistake on the first positive example, all examples are classified correctly until the first negative example, and then after a couple of corrections, all subsequent examples (all negative) are all classified correctly. Thus, the hypothesis learned is not indicative of a true weighting of all the features, or more simply the classifier is barely learning because there are almost no updates.
 
 Using $SVM_{light}$ with $C=8$, the training error in all cases is 0.009, and the validation error in all cases is 0.205. We observe that SVM is not order-dependent.
 
@@ -92,7 +92,7 @@ Null hypothesis: $D_1$ is binomial with $p=\frac{1}{2}$ and $k=100$.
 
 $P(D_1 \ge d_1~|~p = 0.5, k) = 0.0104 < 0.025$
 
-Reject null hypothesis. There is evidence to suggest that the number of errors produced by both hypothesis are significantly different.
+Reject null hypothesis. There is evidence to suggest that the number of errors produced by both hypothesis are significantly different. The hypothesis test results seems correct, because SVM with slack should always outperform Perceptron, but maybe not very valid, since only about 320-341 features are not missing out of 29238 for all the examples so a lot of assumptions are being made here.
 
 
 \section{Linear Separability}
@@ -157,15 +157,7 @@ this function, we take the derivative of the function with respect to $\alpha_i$
 , where $l_i = x_i^Tx_i$ for each training example $(x_i, y_i)$. Again, we know that this is a maximum point since the second derivative is $-l_i < 0$.
 
 \subsection{c.}
-First, note that in the perceptron primal algorithm, for each update, you add $y_i x_i$ to $w_k$. If all $x_i$ are scaled up, such that $x_i^\star = kx_i$, in each update, you will instead add $ky_ix_i$ to $w_k$. Thus, after normalizing, $w$ will still be the same as before, since we simply multiplied $w$ (unnormalized) by $k$.
+So to keep the same linear classifier, the mistake bound, $\frac{R^2}{\delta^2}$ should be invariant to this scaling. Since $R = max\l x_i\l$ and x gets scaled by k, $R\prime = k*R$, and to keep the mistake bound invariant, $\delta\prime = k*\delta$. Since $\delta = \frac{1}{\lw\l}, w\prime = \frac{w}{k}$. Now since $\xi_i$ is in Ôunits of $\delta$Õ, $\xi_i$ should not change, so to have the same linear classifier C should become \frac{C}{k}.
 
-Now, the error $\xi_i$ will be multiplied by $k$ for each $i$. To see why this is the case, notice that this value depends on the distance to the hyperplane, $w^Tx_i$. In the new case, this value is now $w^Tx_i^\star = kw^Tx_i$, so that this distance is multiplied by $k$.
-
-Thus, in our objective, we want to set $C$ such that our new objective $\min \frac{1}{2}||w^{\star 2}|| + C^\star \sum_{i=1}^n \xi_i^\star$ is a constant factor of our original objective function.
-But we found out the new values of $w$ and $xi$, so we know our new objective is equivalently $\min \frac{1}{2}||w^2|| + C^\star \sum_{i=1}^n k\xi_i$. Comparing terms, $kC^\star = C \Rightarrow C^\star = \frac{C}{k}$.
-
-Thus, $C$ should be divided by $k$ so that the new solution defines the same linear classifier.
-
-The resulting $(w^\star, \xi^\star)$ is equivalently $(w, k\xi)$. 
 
 \end{document}
