@@ -1,11 +1,12 @@
 from Perceptron import *
 from FastPerceptron import *
+from FasterPerceptron import *
 from Loaders import *
 
 data = load_data('../data/polarity.train')
 vali = load_data('../data/polarity.validation')
 
-p = FastPerceptron(data)
+p = FasterPerceptron(data)
 
 for i in range(0,20):
   print "Iteration %d" % i

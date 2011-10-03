@@ -1,12 +1,6 @@
 from Plotter import *
 
-# This is actually the validation error
-
-
-#[609, 470, 311, 165, 146, 130, 42, 36, 10, 18, 4, 8, 4, 2, 4, 0, 0, 0, 0, 0]
-
-# Here v_rate is actually the training error
-v_rate = {}
+# These are reversed!
 
 idx = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 v = [621, 470, 256, 140, 162, 68, 112, 58, 16, 26, 16, 12, 2, 0, 0, 0, 0, 0, 0, 0]
