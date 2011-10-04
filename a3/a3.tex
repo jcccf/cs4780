@@ -161,7 +161,6 @@ this function, we take the derivative of the function with respect to $\alpha_i$
 , where $l_i = x_i^Tx_i$ for each training example $(x_i, y_i)$. Again, we know that this is a maximum point since the second derivative is $-l_i < 0$.
 
 \subsection{c.}
-So to keep the same linear classifier, the mistake bound, $\frac{R^2}{\delta^2}$ should be invariant to this scaling. Since $R = max\l x_i\l$ and x gets scaled by k, $R\prime = k*R$, and to keep the mistake bound invariant, $\delta\prime = k*\delta$. Since $\delta = \frac{1}{\lw\l}, w\prime = \frac{w}{k}$. Now since $\xi_i$ is in Ôunits of $\delta$Õ, $\xi_i$ should not change, so to have the same linear classifier C should become \frac{C}{k}.
-
+So to keep the same linear classifier, the constraint equation wx + b $\le$ 1 - $\xi$ has to remain the same. For the margin to remain the same, if the sample points are now farther apart from the boundary by a factor of k, $\w_i$ should be $\frac{1}{k} its original value. If the margin $\delta$ is seen as a force, since $\x_i$ gets expanded by k $\delta$ should be larger also by k to maintain balance, so $\w_i$ should get divided by k. Since $\x_i$ is in units of $\delta$, it should stay unchanged, so to force the minimization pick the same classifier we can set C to be $\frac{C}{k}.
 
 \end{document}
