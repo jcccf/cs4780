@@ -1,0 +1,107 @@
+\documentclass[]{article}
+
+\usepackage[]{geometry}
+\geometry{
+  top=1in,            % <-- you want to adjust this
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3ex,       % <-- and this
+  headsep=2ex,          % <-- and this
+}
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{mathtools}
+\usepackage{algorithmic}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{titling}
+\usepackage{fancyvrb}
+\pretitle{\begin{flushleft}\LARGE\sffamily}
+\posttitle{\par\end{flushleft}\vskip 0.5em}
+\preauthor{\begin{flushleft}}
+\postauthor{\par\end{flushleft}}
+\predate{\begin{flushleft}\scshape}
+\postdate{\par\end{flushleft}}
+\setlength{\droptitle}{-20pt}
+\setlength{\headheight}{15.2pt}
+\pagestyle{fancy}
+
+\setcounter{secnumdepth}{1}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt} % remove line at top
+\lhead{\fancyplain{}{CS 4780 A4}}
+\rhead{\fancyplain{}{Justin Cheng \emph{jc882}, Sunling Selena Yang \emph{sy483}}}
+\rfoot{\fancyplain{}{\thepage}}
+
+\begin{document}
+
+\title{CS 4780 Assignment 4}
+\author{Justin Cheng \emph{jc882} and Sunling Selena Yang \emph{sy483}}
+\date{\today}
+\maketitle
+
+\hrule
+\vskip 1em
+
+\section{Kernels}
+
+\subsection*{a.}
+Modifying the dual perceptron algorithm,
+
+\begin{algorithmic}
+\STATE $\alpha_i = 0 ~\forall~ i = 1,...,n$
+\FOR{$i=1$ to $n$}
+	\IF{$y_i\sum_{j=1}^n \alpha_j K(x_j, x_i)) \le 0$}
+		\STATE $\alpha_i = \alpha_i + y_i$
+	\ENDIF
+\ENDFOR
+\STATE Output $\sum_{j=1}^n \alpha_j x_j$
+\end{algorithmic}
+
+The prediction rule becomes
+
+$\operatorname{sign}(\sum_{j=1}^n \alpha_j K(x_j, x))$ for some test sample $x$
+
+\subsection*{b.}
+
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    C & 0.0001 & 0.0005 & 0.001 & 0.005 & 0.01 & 0.05 & 0.1 \\
+    \hline
+    0 & 100 & 100 & 100 & 100 & 100 & 100 & 100 \\
+    1 & 97.71 & 97.71 & 97.71 & 97.96 & 97.96 & 97.71 & 97.46 \\
+    2 & 99.22 & 99.22 & 99.22. & 99.22 & 99.22 & 98.96 & 98.96 \\
+    3 & 99.48 & 99.22 & 98.96 & 98.96 & 98.96 & 98.96 & 98.96 \\
+    4 & 99.20 & 99.20 & 99.20 & 99.46 & 99.73 & 99.46 & 98.93 \\
+    5 & 99.74 & 100 & 100 & 100 & 100 & 99.48 & 100 \\
+    6 & 99.74 & 100 & 100 & 100 & 100 & 99.48 & 99.22 \\
+    7 & 98.93 & 99.20 & 99.20 & 99.20 & 98.93 & 99.20 & 99.20 \\
+    8 & 94.75 & 95.28 & 95.80 & 95.54 & 95.54 & 95.54 & 96.06 \\
+    9 & 96.83 & 97.88 & 98.41 & 98.15 & 97.88 & 98.15 & 98.15 \\
+    \hline
+  \end{tabular}
+\end{center}
+
+Pick the minimum $C$ with the highest accuracy - giving the softest boundary which doesn't compromise on accuracy.
+
+The accuracy of the test set is $175/1797 = 0.0974$.
+
+\subsection*{c.}
+\begin{verbatim}
+svm_learn -c 0.005 -t 1 -d 2 ../data/digits/digits0.train ../data/digits/poly/digits0_2_0.005.model
+\end{verbatim}
+The new accuracy is $181/1797 = 0.101$
+
+\subsection*{d.}
+\begin{verbatim}
+svm_multiclass_learn -c 0.5 ../data/digits/digits.train ../data/digits/multi/0.5.model
+\end{verbatim}
+
+Obtain a new accuracy of $1657/1797 = 0.922$
+
+\end{document}
