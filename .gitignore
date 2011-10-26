@@ -6,3 +6,5 @@ a1/*
 *.zip
 *~*.xlsx
 *.pdf
+*svm_*classify
+*svm_*learn
