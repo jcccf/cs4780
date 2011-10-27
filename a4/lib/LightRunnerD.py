@@ -1,7 +1,7 @@
 import commands
 
 # Write Function To Discover Accuracy From String
-def get_accuracy(stringy):
+def get_error(stringy):
   stringy = stringy.split('\n')
   for s in stringy:
     if 'Zero/one-error' in s:
@@ -33,10 +33,10 @@ for c in cs:
   commands.getoutput('svm_multiclass_learn -c %s ../data/digits/digits.train ../data/digits/multi/%s.model' % (c,c))
   cposs.append((c,commands.getoutput('svm_multiclass_classify ../data/digits/digits.val ../data/digits/multi/%s.model ../data/digits/multiclass/%s.classified' % (c,c))))
 print cposs
-cposs = [(c,get_accuracy(x)) for c,x in cposs]
+cposs = [(c,get_error(x)) for c,x in cposs]
 
 print cposs
 
 # PART 2
-
-print commands.getoutput('svm_multiclass_classify ../data/digits/digits.test ../data/digits/multi/%s.model ../data/digits/multiclass/%s.test.classified' % (5,5))
+c_best = 5 # I manually set this
+print commands.getoutput('svm_multiclass_classify ../data/digits/digits.test ../data/digits/multi/%s.model ../data/digits/multiclass/%s.test.classified' % (c_best,c_best))

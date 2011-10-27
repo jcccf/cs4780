@@ -104,4 +104,65 @@ svm_multiclass_learn -c 0.5 ../data/digits/digits.train ../data/digits/multi/0.5
 
 Obtain a new accuracy of $1657/1797 = 0.922$
 
+\section{Generative Models}
+
+\subsection*{a.}
+First,
+\begin{align*}
+h(\vec x) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)e^{-\frac{1}{2}(\vec x - \mu_{y})^2} \\
+&= \arg \max_{y \in \{+1,-1\}} -\frac{1}{2}(\vec x - \mu_y)^2 + \ln Pr(Y=y)
+\end{align*}
+
+Second, note that if \[-\frac{1}{2}(\vec x - \mu_{+1})^2 + \ln Pr(Y=+1) > -\frac{1}{2}(\vec x - \mu_{-1})^2 + \ln Pr(Y=-1)\], then we pick $+1$. So we can simply consider the sign of \[\left(-\frac{1}{2}(\vec x - \mu_{+1})^2 + \ln Pr(Y=+1)\right) - \left( -\frac{1}{2}(\vec x - \mu_{-1})^2 + \ln Pr(Y=-1) \right)\]
+
+which simplifies to \[(\mu_{+1}-\mu_{-1})\vec x + \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}(\mu_{-1}^2 - \mu_{+1}^2)\]
+
+Thus, $\vec v = \mu_{+1}-\mu_{-1}$ and $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}(\mu_{-1}^2 - \mu_{+1}^2)$.
+
+\subsection*{b.}
+
+\begin{align*}
+h(d) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^lPr(W=w_i|Y=y) \\
+&= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^l e^{-\frac{1}{2}(w_i - \mu_y)^2} \\
+&= \arg \max_{y \in \{+1,-1\}} \ln Pr(Y=y) + \sum_{i=1}^l -\frac{1}{2}(w_i - \mu_y)^2 \\
+&= \arg \max_{y \in \{+1,-1\}} \ln Pr(Y=y) - \frac{1}{2}l\mu_y^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_y \\
+&= \operatorname{sign}\left( \ln Pr(Y=+1) - \frac{1}{2}l\mu_{+1}^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_{+1} - \left(\ln Pr(Y=-1) - \frac{1}{2}l\mu_{-1}^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_{-1}\right)\right) \\
+&= \operatorname{sign}\left( \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}l(\mu_{-1}^2 - \mu_{+1}^2) + \sum_{i=1}^l w_i(\mu_{+1}-\mu_{-1}) \right)
+\end{align*}
+
+Now, let $\vec x = (x_1,...,x_n)$ be a vector of all $n$ unique words in our vocabulary. Let $\vec v = (v_1,...,v_n)$ and $v_i = \sum_{w \in \{w|w \in d, w=x_i\}}(\mu_{+1}-\mu_{-1})$. Observe that $\vec v \cdot \vec x$ now corresponds to the last term in the last line of $h(d)$.
+
+Finally, $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}l(\mu_{-1}^2 - \mu_{+1}^2)$
+
+\subsection*{c.}
+
+
+Let $S$ be the random variable whose value we want to predict, and $A$, $B$ be random variables representing the two candidate attributes. Let $\{x,y\}$ be the only possible values $S$ can take, and let $A,B$ be boolean variables, i.e. they take $\{True,False\}$.
+
+Given
+
+$P(S=x)=\frac{5}{6}$, $P(S=y)=\frac{1}{6}$
+
+$P(A=True|S=x) = 0.2$, $P(A=True|S=y) = 0.5$
+
+and that $B$ is just a copy of $A$, so
+
+$P(B=True|S=x) = 0.2$, $P(B=True|S=y) = 0.5$
+
+Then
+
+$P(S=x|A,B=True) = P(S=x|A=True) = \frac{Pr(S=x \cap A=True)}{Pr(A=True)} = \frac{0.2 \cdot \frac{5}{6}}{0.2 \cdot \frac{5}{6} + 0.5 \cdot \frac{1}{6}} = \frac{2}{3}$
+
+$P(S=y|A,B=True) = \frac{1}{3}$
+
+So the Bayes-optimal labeling labels something that has $A,B$ as true as $x$.
+
+But
+
+$P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{5}{6} \cdot 0.2 \cdot 0.2 = \frac{1}{30}$
+
+$P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{1}{6} \cdot 0.5 \cdot 0.5 = \frac{1}{24} > \frac{1}{30}$
+
+So the Naive labeling labels something that has $A,B$ as true as $y$.
+
 \end{document}
