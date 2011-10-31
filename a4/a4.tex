@@ -123,16 +123,29 @@ Thus, $\vec v = \mu_{+1}-\mu_{-1}$ and $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \fra
 
 \begin{align*}
 h(d) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^lPr(W=w_i|Y=y) \\
-&= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^l e^{-\frac{1}{2}(w_i - \mu_y)^2} \\
-&= \arg \max_{y \in \{+1,-1\}} \ln Pr(Y=y) + \sum_{i=1}^l -\frac{1}{2}(w_i - \mu_y)^2 \\
-&= \arg \max_{y \in \{+1,-1\}} \ln Pr(Y=y) - \frac{1}{2}l\mu_y^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_y \\
-&= \operatorname{sign}\left( \ln Pr(Y=+1) - \frac{1}{2}l\mu_{+1}^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_{+1} - \left(\ln Pr(Y=-1) - \frac{1}{2}l\mu_{-1}^2 + \sum_{i=1}^l -\frac{1}{2}w_i^2 + w_i\mu_{-1}\right)\right) \\
-&= \operatorname{sign}\left( \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}l(\mu_{-1}^2 - \mu_{+1}^2) + \sum_{i=1}^l w_i(\mu_{+1}-\mu_{-1}) \right)
+&= 
+  h(d) = \begin{cases}
+    1 & if Pr(Y=1)\prod_{i=1}^lPr(W=w_i|Y=1) > Pr(Y=-1)\prod_{i=1}^lPr(W=w_i|Y=-1) \\
+    -1 & otherwise \\
+    \end{cases} \\
+&= 
+  h(d) = \begin{cases}
+    1 \quad if \frac{Pr(Y=1)\prod_{i=1}^lPr(W=w_i|Y=1)}{Pr(Y=-1)\prod_{i=1}^lPr(W=w_i|Y=-1)} > 1 \\
+    -1 \quad otherwise \\
+    \end{cases}  \\
+&= 
+  h(d) = \begin{cases}
+    1 \quad if \ln(Pr(Y=1)) + \sum_{i=1}^lPr(W=w_i|Y=1) - \ln(Pr(Y=-1)) - \sum_{i=1}^lPr(W=w_i|Y=-1) > 0 \\
+    -1 \quad otherwise \\
+    \end{cases} \\
+&= \operatorname{sign}\left(\ln \frac{Pr(Y=1)}{Pr(Y=-1)} + \sum_{i=1}^l\frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)}\right)
 \end{align*}
 
-Now, let $\vec x = (x_1,...,x_n)$ be a vector of all $n$ unique words in our vocabulary. Let $\vec v = (v_1,...,v_n)$ and $v_i = \sum_{w \in \{w|w \in d, w=x_i\}}(\mu_{+1}-\mu_{-1})$. Observe that $\vec v \cdot \vec x$ now corresponds to the last term in the last line of $h(d)$.
+Now, define $\vec x$ so that $x_i$ = 1 if word i is in the document and 0 if not. 
 
-Finally, $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}l(\mu_{-1}^2 - \mu_{+1}^2)$
+Then, $v_i = \ln \frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)} $.
+
+Finally, $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} $.
 
 \subsection*{c.}
 
@@ -164,5 +177,52 @@ $P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{5}{6} \cdot 0.2 \cdot 0.2 = \frac{1}{3
 $P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{1}{6} \cdot 0.5 \cdot 0.5 = \frac{1}{24} > \frac{1}{30}$
 
 So the Naive labeling labels something that has $A,B$ as true as $y$.
+
+\section{Naive Bayes Classifier Implementation}
+\subsection*{a.}
+Using the default value of $C$, the accuracy obtained is $0.968$, with $31451$ correctly classified, and $1036$ incorrectly classified.
+
+\subsubsection{Best $C$}
+Using four-fold cross validation on \texttt{arxiv.norm.train}, the best accuracy is obtained when $C=1$ with validation accuracy of $0.969$.
+
+The accuracy on \texttt{arxiv.norm.test} is $0.968$, with $31451$ correct and $1036$ incorrect. There were $291$ false positives and $745$ false negatives.
+
+\subsubsection{Best $C$ for Unnormalized}
+Using four-fold cross validation on \texttt{arxiv.train}, the best accuracy is obtained when $C=0.01$ with validation accuracy of $0.965$.
+
+The accuracy on \texttt{arxiv.test} is $0.964$, with $31327$ correct and $1160$ incorrect. There were $286$ false positives and $874$ false negatives.
+
+It does not seem like normalization helps a lot.
+
+\subsection*{b.}
+
+The accuracy obtained is $0.960$, with $31201$ correct. There was $394$ false positive and $892$ false negatives.
+
+\subsection*{c.}
+
+The accuracy obtained is $0.960$, with $31191$ correct. There were $467$ false positives and $829$ false negatives.
+
+As $\frac{c_{10}}{c_{01}}$ increases, the number of false positives increases and the number of false negatives decreases.
+
+\subsection*{d.}
+The value being optimized for in cross-validation is to minimize $c_{10} \cdot$ false negatives + false positives.
+
+Here are the (false positive, false negative) values for each fold of the cross-validation.
+
+(66, 167)
+(54, 180)
+(65, 158)
+(61, 168)
+
+The best $C$ obtained is $C=1$.
+
+The accuracy on the test set is $0.968$, with $314151$ correct.
+
+The false positives and false negatives are $291$ and $745$ respectively.
+
+\subsection*{e.}
+Naive Bayes Classifiers are a lot easier to implement and are computationally less expensive.
+
+However, Naive Bayes Classifiers assume independence between features and become less accurate when there is high correlation between features. Because Naive Bayes is a linear classifier, cannot solve more complex problems unlike SVMs with kernels.
 
 \end{document}
