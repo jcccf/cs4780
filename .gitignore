@@ -5,3 +5,6 @@ a1/*
 *TSWLatexian*
 *.zip
 *~*.xlsx
+*.pdf
+*svm_*classify
+*svm_*learn
