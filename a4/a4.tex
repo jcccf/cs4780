@@ -1,0 +1,228 @@
+\documentclass[]{article}
+
+\usepackage[]{geometry}
+\geometry{
+  top=1in,            % <-- you want to adjust this
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3ex,       % <-- and this
+  headsep=2ex,          % <-- and this
+}
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{mathtools}
+\usepackage{algorithmic}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{titling}
+\usepackage{fancyvrb}
+\pretitle{\begin{flushleft}\LARGE\sffamily}
+\posttitle{\par\end{flushleft}\vskip 0.5em}
+\preauthor{\begin{flushleft}}
+\postauthor{\par\end{flushleft}}
+\predate{\begin{flushleft}\scshape}
+\postdate{\par\end{flushleft}}
+\setlength{\droptitle}{-20pt}
+\setlength{\headheight}{15.2pt}
+\pagestyle{fancy}
+
+\setcounter{secnumdepth}{1}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt} % remove line at top
+\lhead{\fancyplain{}{CS 4780 A4}}
+\rhead{\fancyplain{}{Justin Cheng \emph{jc882}, Sunling Selena Yang \emph{sy483}}}
+\rfoot{\fancyplain{}{\thepage}}
+
+\begin{document}
+
+\title{CS 4780 Assignment 4}
+\author{Justin Cheng \emph{jc882} and Sunling Selena Yang \emph{sy483}}
+\date{\today}
+\maketitle
+
+\hrule
+\vskip 1em
+
+\section{Kernels}
+
+\subsection*{a.}
+Modifying the dual perceptron algorithm,
+
+\begin{algorithmic}
+\STATE $\alpha_i = 0 ~\forall~ i = 1,...,n$
+\FOR{$i=1$ to $n$}
+	\IF{$y_i\sum_{j=1}^n \alpha_j K(x_j, x_i)) \le 0$}
+		\STATE $\alpha_i = \alpha_i + y_i$
+	\ENDIF
+\ENDFOR
+\STATE Output $\sum_{j=1}^n \alpha_j x_j$
+\end{algorithmic}
+
+The prediction rule becomes
+
+$\operatorname{sign}(\sum_{j=1}^n \alpha_j K(x_j, x))$ for some test sample $x$
+
+\subsection*{b.}
+
+\begin{center}
+  \begin{tabular}{|c|c|c|c|c|c|c|c|}
+    \hline
+    C & 0.0001 & 0.0005 & 0.001 & 0.005 & 0.01 & 0.05 & 0.1 \\
+    \hline
+    0 & 100 & 100 & 100 & 100 & 100 & 100 & 100 \\
+    1 & 97.71 & 97.71 & 97.71 & 97.96 & 97.96 & 97.71 & 97.46 \\
+    2 & 99.22 & 99.22 & 99.22. & 99.22 & 99.22 & 98.96 & 98.96 \\
+    3 & 99.48 & 99.22 & 98.96 & 98.96 & 98.96 & 98.96 & 98.96 \\
+    4 & 99.20 & 99.20 & 99.20 & 99.46 & 99.73 & 99.46 & 98.93 \\
+    5 & 99.74 & 100 & 100 & 100 & 100 & 99.48 & 100 \\
+    6 & 99.74 & 100 & 100 & 100 & 100 & 99.48 & 99.22 \\
+    7 & 98.93 & 99.20 & 99.20 & 99.20 & 98.93 & 99.20 & 99.20 \\
+    8 & 94.75 & 95.28 & 95.80 & 95.54 & 95.54 & 95.54 & 96.06 \\
+    9 & 96.83 & 97.88 & 98.41 & 98.15 & 97.88 & 98.15 & 98.15 \\
+    \hline
+  \end{tabular}
+\end{center}
+
+Pick the minimum $C$ with the highest accuracy - giving the softest boundary which doesn't compromise on accuracy.
+
+The accuracy of the test set is $1582/1797 = 0.880$.
+
+\subsection*{c.}
+\begin{verbatim}
+svm_learn -c 0.005 -t 1 -d 2 ../data/digits/digits0.train ../data/digits/poly/digits0_2_0.005.model
+\end{verbatim}
+Picking $d=4$, and $C = 0.0001$ for all digits, the new accuracy is $1730/1797 = 0.963$. The criteria for picking $C$ is pick the minimum $C$ that has the highest accuracy.
+
+\subsection*{d.}
+\begin{verbatim}
+svm_multiclass_learn -c 0.5 ../data/digits/digits.train ../data/digits/multi/0.5.model
+\end{verbatim}
+
+Obtain a new accuracy of $1657/1797 = 0.922$
+
+\section{Generative Models}
+
+\subsection*{a.}
+First,
+\begin{align*}
+h(\vec x) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)e^{-\frac{1}{2}(\vec x - \mu_{y})^2} \\
+&= \arg \max_{y \in \{+1,-1\}} -\frac{1}{2}(\vec x - \mu_y)^2 + \ln Pr(Y=y)
+\end{align*}
+
+Second, note that if \[-\frac{1}{2}(\vec x - \mu_{+1})^2 + \ln Pr(Y=+1) > -\frac{1}{2}(\vec x - \mu_{-1})^2 + \ln Pr(Y=-1)\], then we pick $+1$. So we can simply consider the sign of \[\left(-\frac{1}{2}(\vec x - \mu_{+1})^2 + \ln Pr(Y=+1)\right) - \left( -\frac{1}{2}(\vec x - \mu_{-1})^2 + \ln Pr(Y=-1) \right)\]
+
+which simplifies to \[(\mu_{+1}-\mu_{-1})\vec x + \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}(\mu_{-1}^2 - \mu_{+1}^2)\]
+
+Thus, $\vec v = \mu_{+1}-\mu_{-1}$ and $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} + \frac{1}{2}(\mu_{-1}^2 - \mu_{+1}^2)$.
+
+\subsection*{b.}
+
+\begin{align*}
+h(d) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^lPr(W=w_i|Y=y) \\
+&= 
+  h(d) = \begin{cases}
+    1 & if Pr(Y=1)\prod_{i=1}^lPr(W=w_i|Y=1) > Pr(Y=-1)\prod_{i=1}^lPr(W=w_i|Y=-1) \\
+    -1 & otherwise \\
+    \end{cases} \\
+&= 
+  h(d) = \begin{cases}
+    1 \quad if \frac{Pr(Y=1)\prod_{i=1}^lPr(W=w_i|Y=1)}{Pr(Y=-1)\prod_{i=1}^lPr(W=w_i|Y=-1)} > 1 \\
+    -1 \quad otherwise \\
+    \end{cases}  \\
+&= 
+  h(d) = \begin{cases}
+    1 \quad if \ln(Pr(Y=1)) + \sum_{i=1}^lPr(W=w_i|Y=1) - \ln(Pr(Y=-1)) - \sum_{i=1}^lPr(W=w_i|Y=-1) > 0 \\
+    -1 \quad otherwise \\
+    \end{cases} \\
+&= \operatorname{sign}\left(\ln \frac{Pr(Y=1)}{Pr(Y=-1)} + \sum_{i=1}^l\frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)}\right)
+\end{align*}
+
+Now, define $\vec x$ so that $x_i$ = 1 if word i is in the document and 0 if not. 
+
+Then, $v_i = \ln \frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)} $.
+
+Finally, $b = \ln \frac{Pr(Y=+1)}{Pr(Y=-1)} $.
+
+\subsection*{c.}
+
+
+Let $S$ be the random variable whose value we want to predict, and $A$, $B$ be random variables representing the two candidate attributes. Let $\{x,y\}$ be the only possible values $S$ can take, and let $A,B$ be boolean variables, i.e. they take $\{True,False\}$.
+
+Given
+
+$P(S=x)=\frac{5}{6}$, $P(S=y)=\frac{1}{6}$
+
+$P(A=True|S=x) = 0.2$, $P(A=True|S=y) = 0.5$
+
+and that $B$ is just a copy of $A$, so
+
+$P(B=True|S=x) = 0.2$, $P(B=True|S=y) = 0.5$
+
+Since $P(A,B=True) = P(A=True)$ since $A=B$,
+
+$P(S=x|A,B=True) = P(S=x|A=True) = \frac{Pr(S=x \cap A=True)}{Pr(A=True)} = \frac{0.2 \cdot \frac{5}{6}}{0.2 \cdot \frac{5}{6} + 0.5 \cdot \frac{1}{6}} = \frac{2}{3}$
+
+$P(S=y|A,B=True) = \frac{1}{3}$
+
+So the Bayes-optimal labeling labels something that has $A,B$ as true as $x$.
+
+But
+
+$P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{5}{6} \cdot 0.2 \cdot 0.2 = \frac{1}{30}$
+
+$P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{1}{6} \cdot 0.5 \cdot 0.5 = \frac{1}{24} > \frac{1}{30}$
+
+So the Naive labeling labels something that has $A,B$ as true as $y$.
+
+\section{Na$\"{i}$ve Bayes Classifier Implementation}
+
+\subsection*{a.}
+
+Accuracy using default value of C : 96.81$\%$
+
+Table for C values and their corresponding leave one out accuracies on nsfabs.norm.test are as below:
+
+We pick C =1, which generates an accuracy of 96.81$\%$ on the test set.
+
+For unnormalized dataset we get C=0.01 with an accuracy of $94.82\%$ on the test set. Normalization of feature vectors seems to help accuracy a little, perhaps due to the fact that it's harder to optimize large valued feature vectors because the changes in w or $\alpha$ are too close to the step size. On the test set, there are 820 false positives and 863 false negatives. 
+
+
+\subsection*{b.}
+Accuracy on test set: 96.02$\%$
+false positives: 384
+false negatives: 910
+
+\subsection*{c.}
+Accuray on test set: 95.87$\%$
+false positives: 502
+false negatives: 841
+
+It seems that if the NB is seen as a linear classifier with a decision boundary, assuming c00 and c11 to be zero, the ratio of c10 and c01 acts to push the decision boundary towards negative or positive region, respectively, depending on whether the ratio is greater or smaller than 1, respectively. If I make c10 greater, then more instances will be labeled positive instead of negative, since labeling a positive instance wrongly is more expensive than labeling a negative instance wrongly. 
+
+\subsection*{d.}
+Since $c_{10} = 10$ and $c_{01} = 1$, essentially $\xi_+$ will be about 10 times smaller than $\xi_-$ in general so $\xi_+$ will behave more like a hard margin and the optimization will mainly react with $\xi_-$ with different C. So I am optimizing for C. 
+
+\begin{align*}
+ \begin{tabular}{|l | c | r |}
+  \hline
+  C & false positive & false negative \\
+  0.001 & 22880 & 0 \\
+  0.01 & 6331 & 88 \\
+  0.1 & 1152 & 278 \\
+  1 & 560 & 500 \\
+  \hline
+  \end{tabular}
+\end{align*}
+
+The best C is C=1 with accuracy = 96.21$\%$. Comparing with the predictions file there were 599 false positives and 802 false negatives.
+
+\subsection*{e.}
+Advantages for Na$\"{i}$ve Bayes versus Support Vector Machines include simplicity of implementation and training efficiency. NB takes a few hours to implement while SVM with optimization can get very complicated. For training, NB takes one loop through training data while SVM takes as many as until optimal support vectors are found.
+
+In terms of disadvantages, NB does not produce as good prediction accuracy at least for text classification as seen above, with one of the contributing factors being that words in a document can be highly dependent on each other. Also, being a linear classifier, NB does not handle nonlinear data like for example the xor function while kernel SVM can.
+
+\end{document}
