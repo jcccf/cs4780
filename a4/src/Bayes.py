@@ -50,11 +50,13 @@ class BayesClassifier:
       for a, v in example.attrs.iteritems():
         for i in range(0,int(v)): #for each occurence of some word, add ln Pr(W=w|Y=y)
           curr += self.__WgY__(a,y)
+          # break # HACKY?
       sums.append((y,curr))
     # print sums
-    # if sums[0][1] == sums[1][1]:
-    #   print "WHATTTT"
-    return max(sums, key=lambda x: x[1])[0]
+    if sums[0][1] == sums[1][1]:
+      return '1' # Hardcoded
+    else:
+      return max(sums, key=lambda x: x[1])[0]
 
   # This function only works if there are 2 classes!!!
   # The rest work even if there are >2 classes
@@ -66,6 +68,7 @@ class BayesClassifier:
       for a, v in example.attrs.iteritems():
         for i in range(0,int(v)):
           curr += self.__WgY__(a,y)
+          # break
       sums.append((y, costs_y[y] + curr)) # add because these are logs
     return max(sums, key=lambda x: x[1])[0]
     
@@ -73,12 +76,17 @@ class BayesClassifier:
   # The rest work even if there are >2 classes
   def predict_all(self, examples, cost_sensitive=False):
     num_correct, false_pos, false_neg = 0, 0, 0
+    num_pos, num_neg = 0, 0
     for example in examples:
       if cost_sensitive:
         predicted = self.cost_sensitive_predict(example)
       else:
         predicted = self.predict(example)
       if predicted == example.label:
+        if predicted == '1':
+          num_pos += 1
+        else:
+          num_neg += 1
         num_correct += 1
       elif predicted == '1':
         false_pos += 1

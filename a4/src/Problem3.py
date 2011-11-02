@@ -41,7 +41,8 @@ classified_file2 = '../data/arxiv/arxiv.classified'
 #   print c
 #   print get_cross_val_accuracy(train_file, 4, c=c, j='10')
   
-# learn(train_file, model_file, c=1, j='10')
-# c = classify(test_file, model_file, classified_file)
-# print get_accuracy(c)
-# print get_false_posneg(test_file, classified_file)
+for c in [0.1]:
+  learn(train_file, model_file, c=c, j='10')
+  c = classify(test_file, model_file, classified_file)
+  print get_accuracy(c)
+  print get_false_posneg(test_file, classified_file)

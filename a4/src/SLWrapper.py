@@ -1,7 +1,7 @@
 import commands
 
 def classify(test_file, model_file, classified_file):
-  return commands.getoutput('svm_classify %s %s %s' % (test_file, model_file, classified_file))
+  return commands.getoutput('../bin/svm_classify %s %s %s' % (test_file, model_file, classified_file))
   
 def learn(train_file, model_file, c=None, j=None):
   c_string = ""
@@ -9,8 +9,9 @@ def learn(train_file, model_file, c=None, j=None):
     c_string = "-c %s " % c
   j_string = ""
   if j:
-    j_string = "-j %s " % c
-  return commands.getoutput('svm_learn %s%s%s %s' % (c_string, j_string, train_file, model_file))
+    j_string = "-j %s " % j
+  # print 'svm_learn %s%s%s %s' % (c_string, j_string, train_file, model_file)
+  return commands.getoutput('../bin/svm_learn %s%s%s %s' % (c_string, j_string, train_file, model_file))
   
 def get_accuracy(stringy):
   stringy = stringy.split('\n')
@@ -56,7 +57,7 @@ def get_false_posneg(test_file, classified_file):
     f_val = int(l.replace('\n','').split(' ', 2)[0])
     cf_val = float(cf.readline().replace('\n',''))
     if f_val * cf_val < 0:
-      if f_val > cf_val:
+      if cf_val < 0:
         false_neg += 1
       else:
         false_pos += 1

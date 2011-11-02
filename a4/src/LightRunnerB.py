@@ -7,7 +7,7 @@ import commands
 # for d in range(0,10):
 #   s = []
 #   for c in cs:
-#     s.append(commands.getoutput('svm_learn -c %s ../data/digits/digits%d.train ../data/digits/models/digits%d_%s.model' % (c,d,d,c)))
+#     s.append(commands.getoutput('../bin/svm_learn -c %s ../data/digits/digits%d.train ../data/digits/models/digits%d_%s.model' % (c,d,d,c)))
 #   
 #   with open('../data/digits/models/digits%d.txt' % d, 'w') as f:
 #     for t in s:
@@ -16,7 +16,7 @@ import commands
 # for d in range(0,10):
 #   s = []
 #   for c in cs:
-#     s.append(commands.getoutput('svm_classify ../data/digits/digits%d.val ../data/digits/models/digits%d_%s.model ../data/digits/class/digits%d_%s.classified' % (d,d,c,d,c)))
+#     s.append(commands.getoutput('../bin/svm_classify ../data/digits/digits%d.val ../data/digits/models/digits%d_%s.model ../data/digits/class/digits%d_%s.classified' % (d,d,c,d,c)))
 #   
 #   with open('../data/digits/class/digits%d_classify.txt' % d, 'w') as f:
 #     for t in s:
@@ -30,7 +30,7 @@ rdigits = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 #cbest = [0.1, 0.01, 0.01, 0.0001, 0.01, 0.1, 0.01, 0.1, 0.1, 0.001]
 cbest = [0.0001, 0.005, 0.0001, 0.0001, 0.01, 0.0005, 0.0005, 0.0005, 0.1, 0.001]
 for d, c in zip(digits, cbest):
-  s.append(commands.getoutput('svm_classify ../data/digits/digits.train ../data/digits/models/digits%d_%s.model ../data/digits/best/digits%d.classified' % (d,c,d)))
+  s.append(commands.getoutput('../bin/svm_classify ../data/digits/digits.test ../data/digits/models/digits%d_%s.model ../data/digits/best/digits%d.classified' % (d,c,d)))
 
 errors = 0
 total = 0

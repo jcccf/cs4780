@@ -30,8 +30,8 @@ cs = [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1, 0.5, 1, 5
 
 cposs = []
 for c in cs:
-  commands.getoutput('svm_multiclass_learn -c %s ../data/digits/digits.train ../data/digits/multi/%s.model' % (c,c))
-  cposs.append((c,commands.getoutput('svm_multiclass_classify ../data/digits/digits.val ../data/digits/multi/%s.model ../data/digits/multiclass/%s.classified' % (c,c))))
+  commands.getoutput('../bin/svm_multiclass_learn -c %s ../data/digits/digits.train ../data/digits/multi/%s.model' % (c,c))
+  cposs.append((c,commands.getoutput('../bin/svm_multiclass_classify ../data/digits/digits.val ../data/digits/multi/%s.model ../data/digits/multiclass/%s.classified' % (c,c))))
 print cposs
 cposs = [(c,get_error(x)) for c,x in cposs]
 
@@ -39,4 +39,4 @@ print cposs
 
 # PART 2
 c_best = 5 # I manually set this
-print commands.getoutput('svm_multiclass_classify ../data/digits/digits.test ../data/digits/multi/%s.model ../data/digits/multiclass/%s.test.classified' % (c_best,c_best))
+print commands.getoutput('../bin/svm_multiclass_classify ../data/digits/digits.test ../data/digits/multi/%s.model ../data/digits/multiclass/%s.test.classified' % (c_best,c_best))

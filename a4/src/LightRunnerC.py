@@ -24,26 +24,26 @@ def ccmp(a,b):
     else:
       return -1
 
-# PART C PART 1
-
-cs = [10000, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1]
-
-dpb = []
-for dp in range(2,6):
-  dbest = []
-  for d in range(0,10):
-    cposs = []
-    for c in cs:
-      print commands.getoutput('svm_learn -c %s -t 1 -d %d ../data/digits/digits%d.train ../data/digits/poly/digits%d_%d_%s.model' % (c,dp,d,d,dp,c))
-      cposs.append((c,commands.getoutput('svm_classify ../data/digits/digits%d.val ../data/digits/poly/digits%d_%d_%s.model ../data/digits/polyclass/digits%d_%d_%s.classified' % (d,d,dp,c,d,dp,c))))
-    cposs = [(c,get_accuracy(x)) for c,x in cposs]
-    # print cposs
-    cbest = sorted(cposs, cmp=ccmp)[0]
-    dbest.append(cbest)
-  errors = sum([a[2] for x,a in dbest])
-  dpb.append((errors, dp, dbest))
-dpb = sorted(dpb, key=lambda x:x[0])
-print dpb
+# # PART C PART 1
+# 
+# cs = [10000, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1]
+# 
+# dpb = []
+# for dp in range(2,6):
+#   dbest = []
+#   for d in range(0,10):
+#     cposs = []
+#     for c in cs:
+#       print commands.getoutput('../bin/svm_learn -c %s -t 1 -d %d ../data/digits/digits%d.train ../data/digits/poly/digits%d_%d_%s.model' % (c,dp,d,d,dp,c))
+#       cposs.append((c,commands.getoutput('../bin/svm_classify ../data/digits/digits%d.val ../data/digits/poly/digits%d_%d_%s.model ../data/digits/polyclass/digits%d_%d_%s.classified' % (d,d,dp,c,d,dp,c))))
+#     cposs = [(c,get_accuracy(x)) for c,x in cposs]
+#     # print cposs
+#     cbest = sorted(cposs, cmp=ccmp)[0]
+#     dbest.append(cbest)
+#   errors = sum([a[2] for x,a in dbest])
+#   dpb.append((errors, dp, dbest))
+# dpb = sorted(dpb, key=lambda x:x[0])
+# print dpb
 
 
 # PART C PART 2
@@ -54,7 +54,7 @@ rdigits = [10, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 cbest = [0.0001] * 10
 dp = 4
 for d, c in zip(digits, cbest):
-  s.append(commands.getoutput('svm_classify ../data/digits/digits.train ../data/digits/poly/digits%d_%d_%s.model ../data/digits/polybest/digits%d.classified' % (d,dp,c,d)))
+  s.append(commands.getoutput('../bin/svm_classify ../data/digits/digits.test ../data/digits/poly/digits%d_%d_%s.model ../data/digits/polybest/digits%d.classified' % (d,dp,c,d)))
 
 errors = 0
 total = 0
