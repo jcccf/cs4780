@@ -89,13 +89,13 @@ $\operatorname{sign}(\sum_{j=1}^n \alpha_j K(x_j, x))$ for some test sample $x$
 
 Pick the minimum $C$ with the highest accuracy - giving the softest boundary which doesn't compromise on accuracy.
 
-The accuracy of the test set is $175/1797 = 0.0974$.
+The accuracy of the test set is $1582/1797 = 0.880$.
 
 \subsection*{c.}
 \begin{verbatim}
 svm_learn -c 0.005 -t 1 -d 2 ../data/digits/digits0.train ../data/digits/poly/digits0_2_0.005.model
 \end{verbatim}
-The new accuracy is $181/1797 = 0.101$
+Picking $d=4$, and $C = 0.0001$ for all digits, the new accuracy is $1730/1797 = 0.963$. The criteria for picking $C$ is pick the minimum $C$ that has the highest accuracy.
 
 \subsection*{d.}
 \begin{verbatim}
@@ -162,7 +162,7 @@ and that $B$ is just a copy of $A$, so
 
 $P(B=True|S=x) = 0.2$, $P(B=True|S=y) = 0.5$
 
-Then
+Since $P(A,B=True) = P(A=True)$ since $A=B$,
 
 $P(S=x|A,B=True) = P(S=x|A=True) = \frac{Pr(S=x \cap A=True)}{Pr(A=True)} = \frac{0.2 \cdot \frac{5}{6}}{0.2 \cdot \frac{5}{6} + 0.5 \cdot \frac{1}{6}} = \frac{2}{3}$
 
@@ -178,51 +178,51 @@ $P(S=x)P(A=True|S=x)P(B=True|S=x) = \frac{1}{6} \cdot 0.5 \cdot 0.5 = \frac{1}{2
 
 So the Naive labeling labels something that has $A,B$ as true as $y$.
 
-\section{Naive Bayes Classifier Implementation}
+\section{Na$\"{i}$ve Bayes Classifier Implementation}
+
 \subsection*{a.}
-Using the default value of $C$, the accuracy obtained is $0.968$, with $31451$ correctly classified, and $1036$ incorrectly classified.
 
-\subsubsection{Best $C$}
-Using four-fold cross validation on \texttt{arxiv.norm.train}, the best accuracy is obtained when $C=1$ with validation accuracy of $0.969$.
+Accuracy using default value of C : 96.81$\%$
 
-The accuracy on \texttt{arxiv.norm.test} is $0.968$, with $31451$ correct and $1036$ incorrect. There were $291$ false positives and $745$ false negatives.
+Table for C values and their corresponding leave one out accuracies on nsfabs.norm.test are as below:
 
-\subsubsection{Best $C$ for Unnormalized}
-Using four-fold cross validation on \texttt{arxiv.train}, the best accuracy is obtained when $C=0.01$ with validation accuracy of $0.965$.
+We pick C =1, which generates an accuracy of 96.81$\%$ on the test set.
 
-The accuracy on \texttt{arxiv.test} is $0.964$, with $31327$ correct and $1160$ incorrect. There were $286$ false positives and $874$ false negatives.
+For unnormalized dataset we get C=0.01 with an accuracy of $94.82\%$ on the test set. Normalization of feature vectors seems to help accuracy a little, perhaps due to the fact that it's harder to optimize large valued feature vectors because the changes in w or $\alpha$ are too close to the step size. On the test set, there are 820 false positives and 863 false negatives. 
 
-It does not seem like normalization helps a lot.
 
 \subsection*{b.}
-
-The accuracy obtained is $0.960$, with $31201$ correct. There was $394$ false positive and $892$ false negatives.
+Accuracy on test set: 96.02$\%$
+false positives: 384
+false negatives: 910
 
 \subsection*{c.}
+Accuray on test set: 95.87$\%$
+false positives: 502
+false negatives: 841
 
-The accuracy obtained is $0.960$, with $31191$ correct. There were $467$ false positives and $829$ false negatives.
-
-As $\frac{c_{10}}{c_{01}}$ increases, the number of false positives increases and the number of false negatives decreases.
+It seems that if the NB is seen as a linear classifier with a decision boundary, assuming c00 and c11 to be zero, the ratio of c10 and c01 acts to push the decision boundary towards negative or positive region, respectively, depending on whether the ratio is greater or smaller than 1, respectively. If I make c10 greater, then more instances will be labeled positive instead of negative, since labeling a positive instance wrongly is more expensive than labeling a negative instance wrongly. 
 
 \subsection*{d.}
-The value being optimized for in cross-validation is to minimize $c_{10} \cdot$ false negatives + false positives.
+Since $c_{10} = 10$ and $c_{01} = 1$, essentially $\xi_+$ will be about 10 times smaller than $\xi_-$ in general so $\xi_+$ will behave more like a hard margin and the optimization will mainly react with $\xi_-$ with different C. So I am optimizing for C. 
 
-Here are the (false positive, false negative) values for each fold of the cross-validation.
+\begin{align*}
+ \begin{tabular}{|l | c | r |}
+  \hline
+  C & false positive & false negative \\
+  0.001 & 22880 & 0 \\
+  0.01 & 6331 & 88 \\
+  0.1 & 1152 & 278 \\
+  1 & 560 & 500 \\
+  \hline
+  \end{tabular}
+\end{align*}
 
-(66, 167)
-(54, 180)
-(65, 158)
-(61, 168)
-
-The best $C$ obtained is $C=1$.
-
-The accuracy on the test set is $0.968$, with $314151$ correct.
-
-The false positives and false negatives are $291$ and $745$ respectively.
+The best C is C=1 with accuracy = 96.21$\%$. Comparing with the predictions file there were 599 false positives and 802 false negatives.
 
 \subsection*{e.}
-Naive Bayes Classifiers are a lot easier to implement and are computationally less expensive.
+Advantages for Na$\"{i}$ve Bayes versus Support Vector Machines include simplicity of implementation and training efficiency. NB takes a few hours to implement while SVM with optimization can get very complicated. For training, NB takes one loop through training data while SVM takes as many as until optimal support vectors are found.
 
-However, Naive Bayes Classifiers assume independence between features and become less accurate when there is high correlation between features. Because Naive Bayes is a linear classifier, cannot solve more complex problems unlike SVMs with kernels.
+In terms of disadvantages, NB does not produce as good prediction accuracy at least for text classification as seen above, with one of the contributing factors being that words in a document can be highly dependent on each other. Also, being a linear classifier, NB does not handle nonlinear data like for example the xor function while kernel SVM can.
 
 \end{document}
