@@ -91,6 +91,12 @@ Pick the minimum $C$ with the highest accuracy - giving the softest boundary whi
 
 The accuracy of the test set is $1582/1797 = 0.880$.
 
+\begin{verbatim}
+svm_learn -c 0.5 ../data/digits/digits0.train ../data/digits/models/digits0_2_0.5.model
+svm_classify ../data/digits/digits.val ../data/digits/models/digits0_2_0.5.model ../data
+/digits/best/digits0.classified
+\end{verbatim}
+
 \subsection*{c.}
 \begin{verbatim}
 svm_learn -c 0.005 -t 1 -d 2 ../data/digits/digits0.train ../data/digits/poly/digits0_2_0.005.model
@@ -100,9 +106,11 @@ Picking $d=4$, and $C = 0.0001$ for all digits, the new accuracy is $1730/1797 =
 \subsection*{d.}
 \begin{verbatim}
 svm_multiclass_learn -c 0.5 ../data/digits/digits.train ../data/digits/multi/0.5.model
+svm_multiclass_classify ../data/digits/digits.val ../data/digits/multi/0.5.model ../data/digits/multi
+/0.5.classified
 \end{verbatim}
 
-Obtain a new accuracy of $1657/1797 = 0.922$
+We found the optimal C = 5 and the corresponding accuracy on the test set = $1657/1797 = 92.21\%$. This is much better accuracy than that obtained with $SVM_Light$ on linear kernels, in spite of the fact that the data appears to be nonlinear.
 
 \section{Generative Models}
 
@@ -141,7 +149,7 @@ h(d) &= \arg \max_{y \in \{+1,-1\}} Pr(Y=y)\prod_{i=1}^lPr(W=w_i|Y=y) \\
 &= \operatorname{sign}\left(\ln \frac{Pr(Y=1)}{Pr(Y=-1)} + \sum_{i=1}^l\frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)}\right)
 \end{align*}
 
-Now, define $\vec x$ so that $x_i$ = 1 if word i is in the document and 0 if not. 
+Now, define $\vec x$ so that $x_i$ = 1 if word i is in the document and 0 if not, essentially binarize $\vec x$.
 
 Then, $v_i = \ln \frac{Pr(W=w_i|Y=1)}{Pr(W=w_i|Y=-1)} $.
 
@@ -188,41 +196,41 @@ Table for C values and their corresponding leave one out accuracies on nsfabs.no
 
 We pick C =1, which generates an accuracy of 96.81$\%$ on the test set.
 
-For unnormalized dataset we get C=0.01 with an accuracy of $94.82\%$ on the test set. Normalization of feature vectors seems to help accuracy a little, perhaps due to the fact that it's harder to optimize large valued feature vectors because the changes in w or $\alpha$ are too close to the step size. On the test set, there are 820 false positives and 863 false negatives. 
+For unnormalized dataset we get C=0.01 with an accuracy of $96.43\%$ on the test set. Normalization of feature vectors seems not to have helped the accuracy very much. Since it is the case that features with large feature vector values will tilt the decision boundary and cause errors for examples with small feature vector values that would be correct in the normalized case, it would seem that the arxiv dataset does not have very unbalanced feature vector values. On the test set, there are 286 false positives and 874 false negatives. 
 
 
 \subsection*{b.}
-Accuracy on test set: 96.02$\%$
-false positives: 384
-false negatives: 910
+Accuracy on test set: 96.0$\%$
+false positives: 394
+false negatives: 892
 
 \subsection*{c.}
-Accuray on test set: 95.87$\%$
-false positives: 502
-false negatives: 841
+Accuray on test set: 96.0$\%$
+false positives: 467
+false negatives: 829
 
-It seems that if the NB is seen as a linear classifier with a decision boundary, assuming c00 and c11 to be zero, the ratio of c10 and c01 acts to push the decision boundary towards negative or positive region, respectively, depending on whether the ratio is greater or smaller than 1, respectively. If I make c10 greater, then more instances will be labeled positive instead of negative, since labeling a positive instance wrongly is more expensive than labeling a negative instance wrongly. 
+It seems that if the NB is seen as a linear classifier with a decision boundary, assuming c00 and c11 to be zero, the ratio of c10 and c01 acts as a bias to push the decision boundary towards negative or positive region depending on whether the ratio is greater or smaller than 1, respectively. If I make c10 greater, then more instances will be labeled positive instead of negative compared to before, since labeling a false positive is not as expensive as a false negative. 
 
 \subsection*{d.}
-Since $c_{10} = 10$ and $c_{01} = 1$, essentially $\xi_+$ will be about 10 times smaller than $\xi_-$ in general so $\xi_+$ will behave more like a hard margin and the optimization will mainly react with $\xi_-$ with different C. So I am optimizing for C. 
+Since $c_{10} = 10$ and $c_{01} = 1$, you want to minimize $c_{10} \cdot$ \# false negatives + $c_{01} \cdot$ \# false positives, which intuitively penalizes false negatives a lot more (10 times as much).
 
 \begin{align*}
- \begin{tabular}{|l | c | r |}
+ \begin{tabular}{|l|l|l|l|}
   \hline
-  C & false positive & false negative \\
-  0.001 & 22880 & 0 \\
-  0.01 & 6331 & 88 \\
-  0.1 & 1152 & 278 \\
-  1 & 560 & 500 \\
+  C & false positive & false negative & value to minimize\\
+  0.001 & 22880 & 0 & 22880 \\
+  0.01 & 6331 & 88 & 7211 \\
+  0.1 & 1152 & 278 & 3932 \\
+  1 & 560 & 500 & 5560 \\
   \hline
   \end{tabular}
 \end{align*}
 
-The best C is C=1 with accuracy = 96.21$\%$. Comparing with the predictions file there were 599 false positives and 802 false negatives.
+The best C is C=0.1 with accuracy = 95.17$\%$. Comparing with the predictions file there were 1283 false positives and 285 false negatives.
 
 \subsection*{e.}
 Advantages for Na$\"{i}$ve Bayes versus Support Vector Machines include simplicity of implementation and training efficiency. NB takes a few hours to implement while SVM with optimization can get very complicated. For training, NB takes one loop through training data while SVM takes as many as until optimal support vectors are found.
 
-In terms of disadvantages, NB does not produce as good prediction accuracy at least for text classification as seen above, with one of the contributing factors being that words in a document can be highly dependent on each other. Also, being a linear classifier, NB does not handle nonlinear data like for example the xor function while kernel SVM can.
+In terms of disadvantages, NB does not produce as good prediction accuracy at least for text classification as seen above, with one of the contributing factors being that words in a document can be highly dependent on each other. Also, being a linear classifier, NB does not handle nonlinear data like for example the xor function while kernel SVM can. Also, unlike SVM, NB is not robust against noisy data.
 
 \end{document}
