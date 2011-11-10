@@ -1,0 +1,160 @@
+\documentclass[]{article}
+
+\usepackage[]{geometry}
+\geometry{
+  top=1in,            % <-- you want to adjust this
+  inner=1in,
+  outer=1in,
+  bottom=1in,
+  headheight=3ex,       % <-- and this
+  headsep=2ex,          % <-- and this
+}
+\usepackage[T1]{fontenc}
+\usepackage{cmbright}
+\usepackage{mathtools}
+\usepackage{algorithmic}
+\usepackage{fancyhdr}
+\usepackage{amssymb}
+\usepackage{multicol}
+\usepackage{parskip}
+\usepackage{titling}
+\pretitle{\begin{flushleft}\LARGE\sffamily}
+\posttitle{\par\end{flushleft}\vskip 0.5em}
+\preauthor{\begin{flushleft}}
+\postauthor{\par\end{flushleft}}
+\predate{\begin{flushleft}\scshape}
+\postdate{\par\end{flushleft}}
+\setlength{\droptitle}{-20pt}
+\setlength{\headheight}{15.2pt}
+\pagestyle{fancy}
+
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt} % remove line at top
+\lhead{\fancyplain{}{CS 4780 A5}}
+\rhead{\fancyplain{}{Justin Cheng \emph{jc882} and Sunling Selena Yang (sy???)}}
+\rfoot{\fancyplain{}{\thepage}}
+
+\begin{document}
+
+\title{CS 4780 Assignment 5}
+\author{Justin Cheng and Sunling Selena Yang}
+\date{\today}
+\maketitle
+
+\hrule
+\vskip 1em
+
+\section{Viterbi Algorithm}
+
+\subsection{Most Likely Translations}
+
+What follows in each section is the table of probabilities for partial paths, then the back-pointer tables.
+
+\subsubsection{$\alpha \eta$}
+
+\begin{tabular}{ |c|c|c| }
+\hline
+  & $\alpha$ & $\eta$ \\
+\hline
+a & 0.04 & 0.0042 \\
+t & 0.03 & 0.0024 \\
+o & 0.02 & 0.006 \\
+n & 0.12 & 0.004 \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ |c|c|c| }
+\hline
+  & $\alpha$ & $\eta$ \\
+\hline
+a & None & n \\
+t & None & a \\
+o & None & n \\
+n & None & o \\
+\hline
+\end{tabular}
+
+Predicting "no".
+
+\subsubsection{$\tau \omega \gamma$}
+
+\begin{tabular}{ |c|c|c|c| }
+\hline
+  & $\tau$ & $\omega$ & $\gamma$ \\
+\hline
+a & 0.02 & 0.0048 & 0.00048 \\
+t & 0.12 & 0.0012 & 0.00216 \\
+o & 0.02 & 0.024 & 0.00048 \\
+n & 0.04 & 0.0012 & 0.0012 \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ |c|c|c|c| }
+\hline
+  & $\tau$ & $\omega$ & $\gamma$ \\
+\hline
+a & None & t & o \\
+t & None & a & o \\
+o & None & t & o \\
+n & None & t & o \\
+\hline
+\end{tabular}
+
+Predicting "tot".
+
+\subsubsection{$\gamma \alpha \omega \eta$}
+
+\begin{tabular}{ |c|c|c|c|c| }
+\hline
+  & $\gamma$ & $\alpha$ & $\omega$ & $\eta$\\
+\hline
+a & 0.02 & 0.0144 & 0.00021 & 3.456e-05 \\
+t & 0.09 & 0.0012 & 0.000864 & 5.4e-05 \\
+o & 0.04 & 0.0036 & 0.0018 & 3.456e-05 \\
+n & 0.04 & 0.006 & 0.00018 & 0.00036 \\
+\hline
+\end{tabular}
+
+\begin{tabular}{ |c|c|c|c|c| }
+\hline
+  & $\gamma$ & $\alpha$ & $\omega$ & $\eta$\\
+\hline
+a & None & t & n & t \\
+t & None & a & a & o \\
+o & None & t & a & t \\
+n & None & o & a & o \\
+\hline
+\end{tabular}
+
+Predicting "taon".
+
+\subsection{Complexity}
+In each "step" of the dynamic program, perform $m$ lookups for each of the English letters. For each English letter, compare against previous $m$ English letters, for a total cost of $O(m^2)$.
+
+There are $k$ steps. So the total cost is $O(km^2)$. Notice that this is independent of the size of the Emelic vocabulary.
+
+In a brute-force algorithm, try all possibilities. So for each Emelic letter, try $m$ English letters. Since there are $k$ letters, this is $O(m^k)$.
+
+\subsection{Probability of an observation}
+
+First we calculate 
+
+$P(x_i) = \sum_{y_i} P(x_i \cap y_i) = \sum_{y_i} P(x_i|y_i)P(y_i)$, and we know the values of both $P(x_i|y_i)$ from table 2 and $P(y_i)$ from START in table 1.
+
+Also, $P(y_i|x_i) = P(x_i|y_i)P(y_i)/P(x_i)$.
+
+Then, $P(x_i|x_{i-1}) = P(x_i \cap x_{i-1}) / P(x_{i-1}) = \frac{\sum_{y_i} P(x_i|y_i)P(y_i|y_{i-1})P(x_{i-1}|y_{i-1})}{P(x_{i-1})}$. It is easier to visualize this specific probability by thinking about the state diagram with nodes corresponding to $y_i$s, arrows corresponding to $P(y_i|y_{i-1})$ and "pies" at each node corresponding to $P(x_i|y_i)$.
+
+Now, $P(x_1,...,x_k) = \sum_{all~ys} P(x_1,...,x_k \cap y_1,...,y_k) = \sum_{all~ys}P(x_1,...,x_k|y_1,...,y_k)P(y_1,...,y_k)$
+
+And $P(x_1,...,x_k|y_1,...,y_k) = P(x_1)P(y_1|x_1)\prod_{i=2}^{i=k} P(y_i|x_i)P(x_i|x_{i-1})$
+
+But we know $P(x_i)$, $P(y_i|x_i)$, and $P(x_i|x_{i-1})$ and $P(y_1,...,y_k) = P(y_1)P(y_2|y_1)...$
+
+Thus we can then calculate $P(x_1,...,x_k)$ from the above equation.
+
+\subsection{Better translation model}
+
+It would do badly vs the state-of-the-art, because of the different grammars of the two languages. For example, if in one language the sentence structure is Subject-Verb-Object and in the other it is Subject-Object-Verb, it would be difficult to use HMM to derive the right transitions because of the altered ordering.
+
+\end{document}
