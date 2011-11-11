@@ -157,4 +157,45 @@ Thus we can then calculate $P(x_1,...,x_k)$ from the above equation.
 
 It would do badly vs the state-of-the-art, because of the different grammars of the two languages. For example, if in one language the sentence structure is Subject-Verb-Object and in the other it is Subject-Object-Verb, it would be difficult to use HMM to derive the right transitions because of the altered ordering.
 
+\section{Statistical Learning Theory}
+
+\subsection{Restricted Linear Classifier}
+
+With probability $(1-\delta)$, $Err_p(h_{L(S)}) \le Err_s(h_{L(S)}) + \sqrt{\frac{1}{2n}(\log(2|H|) - \log(\delta))}$
+
+Now we know that $Err_s(h_{L(S)}) = 0$, all that remains is finding $|H|$.
+
+Because each of the 100 weight vectors are binary, and the bias can take 21 values, $|H| = 2^{100} \cdot 21$.
+
+Then $Err_p(h_{L(S)}) \le \sqrt{\frac{1}{2n} \log(2^{101}\cdot 21 - \log \delta)} = \sqrt{\frac{1}{2n}(101 \log 2 + \log 21-\log \delta)}$.
+
+\subsection{Unrestricted Linear Classifier}
+Because there is now no restriction on $w_i$ and $b$, this is a linear classifier in $\mathbb{R}^{100}$, so VCDim = 101.
+
+By Sauer's Lemma, $|\pi_H(S)| \le (\frac{e\cdot |S|}{VCDim(H)})^{VCDim(H)} = (\frac{en}{101})^{101}$.
+
+Then $Err_p(h_{L(S)}) \le Err_s(h_{L(S)}) + \sqrt{\frac{1}{2n}(\log(2|H|) - \log(\delta))} = \sqrt{\frac{1}{2n}(101\log(\frac{2en}{101}) - \log(\delta))}$.
+
+\subsection{Training Set Size}
+
+By the Union and Chernoff Bounds, we need to find out $n=|S|$ such that $|H|2e^{-2n\epsilon^2} \le \delta$
+
+or that $(2^{100} \cdot 21)\cdot 2 e^{-2n(0.1)^2} \le 0.1$
+
+Solving for $n$ gives us $n \ge 3767.74...$ so $n$ should be 3768.
+
+\subsection{Spherical Classifiers}
+
+\subsubsection{At least $d$}
+Consider the example set of $d$ elements in $d$ dimensions, where the coordinate of each element is $1$ for one unique dimension and $0$ everywhere else. For example, the first element has coordinates $(1,0,0,...)$ and the second $(0,1,0,0,0...)$
+
+Any classification of these $d$ elements is linearly separable, and we can simply draw a hyperplane to separate these points. We can now construct an arbitrarily large n-dimensional sphere tangent to this hyperplane on whichever side is required to be positive. If the sphere is large enough, we will cover all points on one side of the hyperplane.
+
+\subsubsection{No more than $2d+1$}
+Note that $R - ||x-\vec{c}|| = R - \sqrt{x_1^2 + ... + x_d^2 + \vec w^T x + b}$ where $\vec{w} = (-2c_1,...,-2c_d)$ and $b = c_1^2 + ... + c_d^2$.
+
+Ignoring constants, we now have the equation for a linear classifier and $d$ other terms. A linear classifier in $d$ dimensions can classify up to $d+1$ points. These $d$ other terms can each only classify up to $1$ additional term.
+
+Thus the VCdim is $d+1 + d = 2d+1$.
+
 \end{document}
