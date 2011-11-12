@@ -29,11 +29,12 @@ classified_file2 = '../data/arxiv/arxiv.classified'
 #   print c
 #   print get_cross_val_accuracy(train_file2, 4, c)
 
-# # Picked some C so now test on the test file (unnormalized)
-# learn(train_file2, model_file2, c=0.01)
-# c = classify(test_file2, model_file2, classified_file2)
-# print get_accuracy(c)
-# print get_false_posneg(test_file2, classified_file2)
+# Picked some C so now test on the test file (unnormalized)
+learn(train_file2, model_file2, c=0.01)
+c = classify(test_file2, model_file2, classified_file2)
+print c
+print get_accuracy(c)
+print get_false_posneg(test_file2, classified_file2)
 
 
 # # PART D
@@ -41,8 +42,8 @@ classified_file2 = '../data/arxiv/arxiv.classified'
 #   print c
 #   print get_cross_val_accuracy(train_file, 4, c=c, j='10')
   
-for c in [0.1]:
-  learn(train_file, model_file, c=c, j='10')
-  c = classify(test_file, model_file, classified_file)
-  print get_accuracy(c)
-  print get_false_posneg(test_file, classified_file)
+# for c in [0.1]:
+#   learn(train_file, model_file, c=c, j='10')
+#   c = classify(test_file, model_file, classified_file)
+#   print get_accuracy(c)
+#   print get_false_posneg(test_file, classified_file)

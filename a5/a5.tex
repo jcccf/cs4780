@@ -192,10 +192,28 @@ Consider the example set of $d$ elements in $d$ dimensions, where the coordinate
 Any classification of these $d$ elements is linearly separable, and we can simply draw a hyperplane to separate these points. We can now construct an arbitrarily large n-dimensional sphere tangent to this hyperplane on whichever side is required to be positive. If the sphere is large enough, we will cover all points on one side of the hyperplane.
 
 \subsubsection{No more than $2d+1$}
-Note that $R - ||x-\vec{c}|| = R - \sqrt{x_1^2 + ... + x_d^2 + \vec w^T x + b}$ where $\vec{w} = (-2c_1,...,-2c_d)$ and $b = c_1^2 + ... + c_d^2$.
+Note that $sign(R-||x-\vec c||)$ is the same as if $||x-\vec c|| < R$, output $+1$, else $-1$.
 
-Ignoring constants, we now have the equation for a linear classifier and $d$ other terms. A linear classifier in $d$ dimensions can classify up to $d+1$ points. These $d$ other terms can each only classify up to $1$ additional term.
+Similarly, $sign(w^Tx+b)$ is the same as if $-w^Tx < b$, output $+1$, else $-1$.
 
-Thus the VCdim is $d+1 + d = 2d+1$.
+Now, letting $\vec c = (c_1,c_2,...,c_d)$,
+\begin{align*}
+||x-\vec c|| &< R \\
+(x_1-c_1)^2 + ... + (x_d-c_d)^2 &< R^2 \quad \text{(as $R > 0$)}\\
+x_1^2 + ... + x_d^2 -2(c_1x_1 + c_2x_2 + ... + c_dx_d) + (c_1^2 + ... + c_d^2) &< R^2 \\
+x_1^2 + ... + x_d^2 -2(c_1x_1 + c_2x_2 + ... + c_dx_d) &< R^2 - (c_1^2 + ... + c_d^2) \\
+(-2c_1)x_1 + (-2c_2)x_2 + ... + (-2c_d)x_d + x_1^2 + ... + x_d^2 &< R^2 - (c_1^2 + ... + c_d^2) \\
+\end{align*}
+
+Consider a linear classifier of dimension $2d$. This takes the form
+\[
+a_1x'_1 + ... + a_{2d}x'_{2d} < b
+\]
+
+But suppose we let $a_1 = -2c_1$, ..., $a_d = -2c_d$, $b = R^2 - (c_1^2 + ... + c_d^2)$, and let the values of $x'_{d+1} = x_1^2$, ..., $x'_{2d} = x_d^2$, which is a restriction on the possible values of $x'_{d+1},...,x'_{2d}$, and $a_{d+1} = 1$,..., $a_{2d} = 1$.
+
+Then the final row of our spherical classifier corresponds to all the terms in the linear classifier of dimension $2d$.
+
+We've just shown that a spherical classifier of dimension $d$ is a restriction on a linear classifier of dimension $2d$. Since we know the VCdim of this linear classifier is $2d+1$, the VCdim for the spherical classifier cannot be greater than $2d+1$.
 
 \end{document}
