@@ -137,21 +137,15 @@ In a brute-force algorithm, try all possibilities. So for each Emelic letter, tr
 
 \subsection{Probability of an observation}
 
-First we calculate 
+First, $P(x_1,...,x_k|y_1,...,y_k) = P(x_1|y_1) \prod_{i=2}^k P(x_i|y_i)P(y_i|y_{i-1})$.
 
-$P(x_i) = \sum_{y_i} P(x_i \cap y_i) = \sum_{y_i} P(x_i|y_i)P(y_i)$, and we know the values of both $P(x_i|y_i)$ from table 2 and $P(y_i)$ from START in table 1.
+Second, $P(y_1,...,y_k) = P(y_1)P(y_2|y_1)...P(y_k|y_{k-1})$.
 
-Also, $P(y_i|x_i) = P(x_i|y_i)P(y_i)/P(x_i)$.
+Third, $P(x_1,...,x_k \cap y_1,...,y_k) = P(x_1,...,x_k|y_1,...,y_k) \cdot P(y_1,...,y_k)$.
 
-Then, $P(x_i|x_{i-1}) = P(x_i \cap x_{i-1}) / P(x_{i-1}) = \frac{\sum_{y_i} P(x_i|y_i)P(y_i|y_{i-1})P(x_{i-1}|y_{i-1})}{P(x_{i-1})}$. It is easier to visualize this specific probability by thinking about the state diagram with nodes corresponding to $y_i$s, arrows corresponding to $P(y_i|y_{i-1})$ and "pies" at each node corresponding to $P(x_i|y_i)$.
+Finally, $P(x_1,...,x_k) = \sum_{y_1,...,y_k} P(x_1,...,x_k \cap y_1,...,y_k)$.
 
-Now, $P(x_1,...,x_k) = \sum_{all~ys} P(x_1,...,x_k \cap y_1,...,y_k) = \sum_{all~ys}P(x_1,...,x_k|y_1,...,y_k)P(y_1,...,y_k)$
-
-And $P(x_1,...,x_k|y_1,...,y_k) = P(x_1)P(y_1|x_1)\prod_{i=2}^{i=k} P(y_i|x_i)P(x_i|x_{i-1})$
-
-But we know $P(x_i)$, $P(y_i|x_i)$, and $P(x_i|x_{i-1})$ and $P(y_1,...,y_k) = P(y_1)P(y_2|y_1)...$
-
-Thus we can then calculate $P(x_1,...,x_k)$ from the above equation.
+The running time is $O(km^k)$, since you need to calculate $P(x_1,...,x_k \cap y_1,...,y_k)$, which takes $O(k)$ time, $O(m^k)$ times for each sequence of $y_1,...,y_k$.
 
 \subsection{Better translation model}
 
@@ -189,7 +183,7 @@ Solving for $n$ gives us $n \ge 3767.74...$ so $n$ should be 3768.
 \subsubsection{At least $d$}
 Consider the example set of $d$ elements in $d$ dimensions, where the coordinate of each element is $1$ for one unique dimension and $0$ everywhere else. For example, the first element has coordinates $(1,0,0,...)$ and the second $(0,1,0,0,0...)$
 
-Any classification of these $d$ elements is linearly separable, and we can simply draw a hyperplane to separate these points. We can now construct an arbitrarily large n-dimensional sphere tangent to this hyperplane on whichever side is required to be positive. If the sphere is large enough, we will cover all points on one side of the hyperplane.
+Any classification of these $d$ elements is linearly separable, and we can simply draw a hyperplane (ex. one parallel to all dimensions classified one way and perpendicular to all the others) to separate these points. We can now construct an arbitrarily large n-dimensional sphere tangent to this hyperplane on whichever side is required to be positive. If the sphere is large enough, we will cover all points on one side of the hyperplane.
 
 \subsubsection{No more than $2d+1$}
 Note that $sign(R-||x-\vec c||)$ is the same as if $||x-\vec c|| < R$, output $+1$, else $-1$.
@@ -210,7 +204,9 @@ Consider a linear classifier of dimension $2d$. This takes the form
 a_1x'_1 + ... + a_{2d}x'_{2d} < b
 \]
 
-But suppose we let $a_1 = -2c_1$, ..., $a_d = -2c_d$, $b = R^2 - (c_1^2 + ... + c_d^2)$, and let the values of $x'_{d+1} = x_1^2$, ..., $x'_{2d} = x_d^2$, which is a restriction on the possible values of $x'_{d+1},...,x'_{2d}$, and $a_{d+1} = 1$,..., $a_{2d} = 1$.
+where $w = (-a_1,...,-a_{2d})$.
+
+But suppose we let $a_1 = -2c_1$, ..., $a_d = -2c_d$, $b = R^2 - (c_1^2 + ... + c_d^2)$, and let the values of $x'_{d+1} = x_1^2$, ..., $x'_{2d} = x_d^2$, which is a restriction on the possible values of $x'_{d+1},...,x'_{2d}$. Finally, let $a_{d+1} = 1$,..., $a_{2d} = 1$.
 
 Then the final row of our spherical classifier corresponds to all the terms in the linear classifier of dimension $2d$.
 
