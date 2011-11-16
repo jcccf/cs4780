@@ -151,7 +151,7 @@ For a sequence $\alpha, \gamma, \omega$ starting with $a$ and as notational shor
 
 \subsection{Better translation model}
 
-It would do badly vs the state-of-the-art, because of the different grammars of the two languages. For example, if in one language the sentence structure is Subject-Verb-Object and in the other it is Subject-Object-Verb, it would be difficult to use HMM to derive the right transitions because of the altered ordering.
+It would do badly vs the state-of-the-art, because of the different grammars of the two languages. For example, if in one language the sentence structure is Subject-Verb-Object and in the other it is Subject-Object-Verb, it would be difficult to use HMM to derive the right transitions because of the altered ordering. In that case, transition probability would conflict with emission probability.
 
 \section{Statistical Learning Theory}
 
