@@ -133,7 +133,7 @@ In each "step" of the dynamic program, perform $m$ lookups for each of the Engli
 
 There are $k$ steps. So the total cost is $O(km^2)$. Notice that this is independent of the size of the Emelic vocabulary.
 
-In a brute-force algorithm, try all possibilities. So for each Emelic letter, try $m$ English letters. Since there are $k$ letters, this is $O(m^k)$.
+In a brute-force algorithm, try all possibilities. So for each Emelic letter, try $m$ English letters. Since there are $k$ letters, this is $O(m^k)$ so far. But each possibility requires $O(k)$ to compute, for each of $O(y_i|y_{i-1})$. So in total, $O(km^k)$.
 
 \subsection{Probability of an observation}
 
@@ -155,28 +155,28 @@ It would do badly vs the state-of-the-art, because of the different grammars of 
 
 \subsection{Restricted Linear Classifier}
 
-With probability $(1-\delta)$, $Err_p(h_{L(S)}) \le Err_s(h_{L(S)}) + \sqrt{\frac{1}{2n}(\log(2|H|) - \log(\delta))}$
+Now, for a hypothesis with 0 training error, we want $(1-\delta)$ such that $1-\delta \le Err_p(h_{L(S)}) \le |H|e^{-\epsilon n}$
 
-Now we know that $Err_s(h_{L(S)}) = 0$, all that remains is finding $|H|$.
+Rearranging, $\epsilon \le \frac{1}{n}(\log |H| - \log (1-\delta))$
 
 Because each of the 100 weight vectors are binary, and the bias can take 21 values, $|H| = 2^{100} \cdot 21$.
 
-Then $Err_p(h_{L(S)}) \le \sqrt{\frac{1}{2n} \log(2^{101}\cdot 21 - \log \delta)} = \sqrt{\frac{1}{2n}(101 \log 2 + \log 21-\log \delta)}$.
+Thus, $\epsilon \le \frac{1}{n} (100 \log 2 + \log 21 - \log(1-\delta))$
 
 \subsection{Unrestricted Linear Classifier}
 Because there is now no restriction on $w_i$ and $b$, this is a linear classifier in $\mathbb{R}^{100}$, so VCDim = 101.
 
 By Sauer's Lemma, $|\pi_H(S)| \le (\frac{e\cdot |S|}{VCDim(H)})^{VCDim(H)} = (\frac{en}{101})^{101}$.
 
-Then $Err_p(h_{L(S)}) \le Err_s(h_{L(S)}) + \sqrt{\frac{1}{2n}(\log(2|H|) - \log(\delta))} = \sqrt{\frac{1}{2n}(101\log(\frac{2en}{101}) - \log(\delta))}$.
+Then $\epsilon \le \frac{1}{n}(101\log(\frac{en}{101}) - \log(1-\delta))$.
 
 \subsection{Training Set Size}
 
-By the Union and Chernoff Bounds, we need to find out $n=|S|$ such that $|H|2e^{-2n\epsilon^2} \le \delta$
+We need to find out $n=|S|$ such that $|H|e^{-\epsilon n} \le \delta$
 
-or that $(2^{100} \cdot 21)\cdot 2 e^{-2n(0.1)^2} \le 0.1$
+or that $(2^{100} \cdot 21)\cdot e^{-0.1n} \le 0.1$
 
-Solving for $n$ gives us $n \ge 3767.74...$ so $n$ should be 3768.
+Solving for $n$ gives us $n \ge 746.6182...$ so $n$ should be 747.
 
 \subsection{Spherical Classifiers}
 
@@ -184,6 +184,12 @@ Solving for $n$ gives us $n \ge 3767.74...$ so $n$ should be 3768.
 Consider the example set of $d$ elements in $d$ dimensions, where the coordinate of each element is $1$ for one unique dimension and $0$ everywhere else. For example, the first element has coordinates $(1,0,0,...)$ and the second $(0,1,0,0,0...)$
 
 Any classification of these $d$ elements is linearly separable, and we can simply draw a hyperplane (ex. one parallel to all dimensions classified one way and perpendicular to all the others) to separate these points. We can now construct an arbitrarily large n-dimensional sphere tangent to this hyperplane on whichever side is required to be positive. If the sphere is large enough, we will cover all points on one side of the hyperplane.
+
+An alternative possible construction follows:
+
+If all points are classified as positive, set $R=1$ and $c$  to be at the origin. To exclude all points, set $R=0$. To include $m$ specific points and exclude all others, set $c$ to be the centroid of all points to be included and $R$ to be just large enough to cover all $m$ points, and this is $\sqrt{(1-\frac{1}{2})^2 + \frac{1}{2}^2 + ... + \frac{1}{2}^2} = \sqrt{m/4}$. Because all other points have distance $\sqrt{m/4+1} > R$ from $c$, then this construction shatters all possible sets in $d$ dimensions.
+
+For $d=3$, given $x_1=(0,0,1)$, $x_2=(0,1,0)$, and $x_3=(1,0,0)$, to cover all points, set $R=1, c=(0,0,0)$. To cover no points, set $R=0, c=(0,0,0)$. To cover any 1 point, set $R=1, c=x_i$ for $i=1,..,3$. To cover any two points, set $c=(\frac{x_{i_1}+x_{j_1}}{2}, \frac{x_{i_2}+x_{j_2}}{2}, \frac{x_{i_3}+x_{j_3}}{2})$ and $R$ to be $\frac{1}{\sqrt{2}}$. The third point is $\sqrt{3/2}$ away, and larger than $R$.
 
 \subsubsection{No more than $2d+1$}
 Note that $sign(R-||x-\vec c||)$ is the same as if $||x-\vec c|| < R$, output $+1$, else $-1$.
@@ -210,6 +216,8 @@ But suppose we let $a_1 = -2c_1$, ..., $a_d = -2c_d$, $b = R^2 - (c_1^2 + ... + 
 
 Then the final row of our spherical classifier corresponds to all the terms in the linear classifier of dimension $2d$.
 
-We've just shown that a spherical classifier of dimension $d$ is a restriction on a linear classifier of dimension $2d$. Since we know the VCdim of this linear classifier is $2d+1$, the VCdim for the spherical classifier cannot be greater than $2d+1$.
+We've just shown that a spherical classifier in $d$ dimensions is no more expressive than a linear classifier in $2d$ dimensions.
+
+Since we know the VCdim of this linear classifier is $2d+1$, the VCdim for the spherical classifier cannot be greater than $2d+1$.
 
 \end{document}
