@@ -147,6 +147,8 @@ Finally, $P(x_1,...,x_k) = \sum_{y_1,...,y_k} P(x_1,...,x_k \cap y_1,...,y_k)$.
 
 The running time is $O(km^k)$, since you need to calculate $P(x_1,...,x_k \cap y_1,...,y_k)$, which takes $O(k)$ time, $O(m^k)$ times for each sequence of $y_1,...,y_k$.
 
+For a sequence $\alpha, \gamma, \omega$ starting with $a$ and as notational shorthand, letting $(a,a)$ be the transition probability from $a$ to $a$ and $(a,\alpha)$ from $a$ to $\alpha$, then the probability of $aaa$ is $y_1 = P(a)(a,\alpha)(a,a)(a,\gamma)(a,a)(a,\omega)$. Do this for all possible combinations of English letters.
+
 \subsection{Better translation model}
 
 It would do badly vs the state-of-the-art, because of the different grammars of the two languages. For example, if in one language the sentence structure is Subject-Verb-Object and in the other it is Subject-Object-Verb, it would be difficult to use HMM to derive the right transitions because of the altered ordering.
