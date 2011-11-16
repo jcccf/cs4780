@@ -31,7 +31,7 @@
 \fancyhf{}
 \renewcommand{\headrulewidth}{0pt} % remove line at top
 \lhead{\fancyplain{}{CS 4780 A5}}
-\rhead{\fancyplain{}{Justin Cheng \emph{jc882} and Sunling Selena Yang (sy???)}}
+\rhead{\fancyplain{}{Justin Cheng \emph{jc882} and Sunling Selena Yang (sy483)}}
 \rfoot{\fancyplain{}{\thepage}}
 
 \begin{document}
@@ -193,7 +193,9 @@ Any classification of these $d$ elements is linearly separable, and we can simpl
 
 An alternative possible construction follows:
 
-If all points are classified as positive, set $R=1$ and $c$  to be at the origin. To exclude all points, set $R=0$. To include $m$ specific points and exclude all others, set $c$ to be the centroid of all points to be included and $R$ to be just large enough to cover all $m$ points, and this is $\sqrt{(1-\frac{1}{2})^2 + \frac{1}{2}^2 + ... + \frac{1}{2}^2} = \sqrt{m/4}$. Because all other points have distance $\sqrt{m/4+1} > R$ from $c$, then this construction shatters all possible sets in $d$ dimensions.
+If all points are classified as positive, set $R=1$ and $c$  to be at the origin. To exclude all points, set $R=0$. To include $m$ specific points and exclude all others, set $c$ to be the centroid of all points to be included and $R$ to be just large enough to cover all $m$ points, and this is $R=\sqrt{(1-\frac{1}{m})^2 + \frac{1}{m}^2 + ... + \frac{1}{m}^2} = \sqrt{(m-1)/(m^2)+(1-1/m)^2}$. This is because the centroid is at a point with coordinates consisting only of $0$ or $1/m$, depending on which points are included, the L1-distance from any included point is $1/m$, $(m-1)$ times, and $1-1/m$ once. Because all other points have distance $\sqrt{m/m^2 + 1} > R$ from $c$, then this construction shatters all possible sets in $d$ dimensions.
+
+For example, for 3 points, and selecting $x_2, x_3$, the centroid is at $(0,1/2,1/2)$ The distance of the centroid from $x_2,x_3$ is $\sqrt{(2/3)^2+(1/3)^2} = \sqrt{5/9} = R$. However, $x_1$ is at distance $\sqrt{1 + (1/3)^2 + (1/3)^2} > R$.
 
 For $d=3$, given $x_1=(0,0,1)$, $x_2=(0,1,0)$, and $x_3=(1,0,0)$, to cover all points, set $R=1, c=(0,0,0)$. To cover no points, set $R=0, c=(0,0,0)$. To cover any 1 point, set $R=1, c=x_i$ for $i=1,..,3$. To cover any two points, set $c=(\frac{x_{i_1}+x_{j_1}}{2}, \frac{x_{i_2}+x_{j_2}}{2}, \frac{x_{i_3}+x_{j_3}}{2})$ and $R$ to be $\frac{1}{\sqrt{2}}$. The third point is $\sqrt{3/2}$ away, and larger than $R$.
 
