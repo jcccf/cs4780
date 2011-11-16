@@ -155,20 +155,24 @@ It would do badly vs the state-of-the-art, because of the different grammars of 
 
 \subsection{Restricted Linear Classifier}
 
-Now, for a hypothesis with 0 training error, we want $(1-\delta)$ such that $1-\delta \le Err_p(h_{L(S)}) \le |H|e^{-\epsilon n}$
+Now, for a hypothesis with 0 training error, We want $P(Err_p(\hat h) \le \epsilon) = 1- \delta$ as the question asks.
 
-Rearranging, $\epsilon \le \frac{1}{n}(\log |H| - \log (1-\delta))$
+Also, $P(Err_p(\hat h) \ge \epsilon) \le |H|e^{-\epsilon n} \Rightarrow P(Err_p(\hat h) \le \epsilon) \ge 1 - |H|e^{-\epsilon n}$
+
+Combining, $1-\delta \ge 1 - |H|e^{-\epsilon n}$ or $\delta \le |H|e^{-\epsilon n}$
+
+Then, $\epsilon \le \frac{1}{n}(\log |H| - \log (\delta))$
 
 Because each of the 100 weight vectors are binary, and the bias can take 21 values, $|H| = 2^{100} \cdot 21$.
 
-Thus, $\epsilon \le \frac{1}{n} (100 \log 2 + \log 21 - \log(1-\delta))$
+Thus, $\epsilon \le \frac{1}{n} (100 \log 2 + \log 21 - \log(\delta))$
 
 \subsection{Unrestricted Linear Classifier}
 Because there is now no restriction on $w_i$ and $b$, this is a linear classifier in $\mathbb{R}^{100}$, so VCDim = 101.
 
 By Sauer's Lemma, $|\pi_H(S)| \le (\frac{e\cdot |S|}{VCDim(H)})^{VCDim(H)} = (\frac{en}{101})^{101}$.
 
-Then $\epsilon \le \frac{1}{n}(101\log(\frac{en}{101}) - \log(1-\delta))$.
+Then $\epsilon \le \frac{1}{n}(101\log(\frac{en}{101}) - \log(\delta))$.
 
 \subsection{Training Set Size}
 
